@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>恋愛相性占い | UraNai+（うらないプラス）</title>
-<meta name="description" content="あなたがこたえてURLを送ると、相手もこたえて、ふたりの恋愛相性がわかるよ！相手には恋愛占いだとバレないひみつモードもあるよ。">
+<title>相性診断 | UraNai+（うらないプラス）</title>
+<meta name="description" content="ふたりの名前を入れるだけで相性がわかる！結果のURLを送っても、入れた名前は相手には見えないよ。">
 <!-- OGP（SNS で URL を貼ったときに出るカード）。画像は tools/make-ogp.ps1 で作る -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="UraNai+（うらないプラス）">
-<meta property="og:title" content="恋愛相性占い | UraNai+（うらないプラス）">
-<meta property="og:description" content="あなたがこたえてURLを送ると、相手もこたえて、ふたりの恋愛相性がわかるよ！相手には恋愛占いだとバレないひみつモードもあるよ。">
+<meta property="og:title" content="相性診断 | UraNai+（うらないプラス）">
+<meta property="og:description" content="ふたりの名前を入れるだけで相性がわかる！結果のURLを送っても、入れた名前は相手には見えないよ。">
 <meta property="og:url" content="https://kaikomziu.github.io/uranai-plus/list/5v8zmrv/">
 <meta property="og:image" content="https://kaikomziu.github.io/uranai-plus/ogp.png">
 <meta property="og:image:width" content="1200">
@@ -21,87 +21,57 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=M+PLUS+Rounded+1c:wght@500;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../common.css">
 <link rel="stylesheet" href="../fortune.css">
-<link rel="stylesheet" href="../pair.css">
+<link rel="stylesheet" href="../aisho.css">
 <style>
-  :root { --main:#ff4f8b;--soft:#ffe3ee;--light:#ff8cc0;--shadow:#ffb3cf; }
+  .panel { box-shadow: 0 8px 0 #e2d6ff, 0 16px 40px rgba(155, 107, 255, 0.16); }
+
+  .couple { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; font-size: clamp(18px, 5vw, 23px); }
+  .couple .x { font-size: 1.3em; animation: aishoBeat 1.2s ease-in-out infinite; }
+  .couple .hidden-name { color: #b0a6c8; letter-spacing: 0.1em; }
+
+  .meter { position: relative; width: 150px; height: 150px; margin: 14px auto 0; }
+  .meter svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .meter .track { fill: none; stroke: #f1ebff; stroke-width: 14; }
+  .meter .fill { fill: none; stroke: url(#meterGrad); stroke-width: 14; stroke-linecap: round; stroke-dasharray: 402; stroke-dashoffset: 402; transition: stroke-dashoffset 1.6s cubic-bezier(.3,1,.4,1); }
+  .meter .pct { position: absolute; inset: 0; display: grid; place-items: center; font-family: "Fredoka", sans-serif; font-size: 40px; font-weight: 700; color: #7646e0; }
+  .meter .pct small { font-size: 20px; }
+
+  .tier { margin-top: 10px; font-size: clamp(22px, 5.6vw, 28px); color: #7646e0; }
+  .tier-msg { margin-top: 10px; font-size: 14px; font-weight: 500; line-height: 1.9; text-align: left; }
+
+  .cats { margin-top: 16px; display: grid; grid-template-columns: max-content 1fr 2.8em; gap: 8px; align-items: center; font-size: 13px; text-align: left; white-space: nowrap; }
+  .cat-bar { height: 10px; border-radius: 999px; background: #f1ebff; overflow: hidden; }
+  .cat-bar i { display: block; height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, #ff8cc0, #b69bff); transition: width 1s cubic-bezier(.3,1.3,.5,1); }
+  .cats b { font-family: "Fredoka", sans-serif; color: #9b6bff; text-align: right; }
+
+  .lock-box { margin-top: 14px; padding: 10px 12px; border-radius: 14px; background: #faf7ff; font-size: 12px; font-weight: 500; color: #7a6e98; line-height: 1.7; }
+  .err-ico { font-size: 56px; }
 </style>
 </head>
-<body data-mode="love">
-  <!-- 恋愛相性占い。仕組みは ../pair-core.js（ひみつモード用の ../6vs5h3v/ と共通） -->
-  <span class="deco" style="--x:6%;--y:22%;--s:30px;--d:5s;--delay:0s">💗</span>
-  <span class="deco" style="--x:88%;--y:74%;--s:34px;--d:6s;--delay:-2s">💌</span>
-  <span class="deco" style="--x:5%;--y:78%;--s:26px;--d:4.6s;--delay:-1s">✨</span>
+<body>
+  <span class="deco" style="--x:6%;--y:22%;--s:28px;--d:5s;--delay:0s">💞</span>
+  <span class="deco" style="--x:88%;--y:76%;--s:30px;--d:6s;--delay:-2s">✨</span>
 
   <main class="page">
-    <!-- スタート（自分から始めるとき／届いたURLを開いたとき） -->
-    <section class="screen" id="introScreen">
-      <div class="panel">
-        <div class="big-ico">💘</div>
-        <h1 class="title">恋愛相性占い</h1>
-        <p class="invite" id="inviteMsg" hidden></p>
-        <p class="lead" id="introLead"></p>
-        <label class="secret-toggle first-only">
-          <input type="checkbox" id="secretMode">
-          <span>🤫 ひみつモード
-            <small>相手には「ふたりの相性チェック」として表示されて、恋愛占いだとバレないよ。質問や結果にも恋愛の言葉は出ません。</small>
-          </span>
-        </label>
-        <button class="btn" id="introBtn" type="button">はじめる ▶</button>
-        <details class="secret-open first-only">
-          <summary>🤫 ひみつモードの結果を見る</summary>
-          <p class="note">相手から届いた結果のURLを、ひみつモードを作った端末で開くと恋愛の結果が出るよ。別の端末で見るときは、ここに貼ってね。</p>
-          <div class="url-box">
-            <input class="url-input" id="secretOpenInput" type="url" placeholder="結果のURLを貼る" aria-label="結果のURL">
-            <button class="copy-btn" id="secretOpenBtn" type="button">見る</button>
-          </div>
-          <p class="name-error" id="secretOpenError"></p>
-        </details>
+    <!-- 名前を入れる -->
+    <section class="screen" id="formScreen">
+      <div class="aisho-card">
+        <h1 class="aisho-head">💞 相性診断</h1>
+        <p class="aisho-lead">ふたりの名前を入れるだけで、相性がわかるよ。</p>
+        <div class="aisho-names">
+          <div class="aisho-field"><label for="nameA">あなたの名前</label><input class="aisho-input" id="nameA" maxlength="12" autocomplete="off" placeholder="なまえ"></div>
+          <span class="aisho-x">💞</span>
+          <div class="aisho-field"><label for="nameB">相手の名前</label><input class="aisho-input" id="nameB" maxlength="12" autocomplete="off" placeholder="なまえ"></div>
+        </div>
+        <p class="aisho-err" id="aishoErr"></p>
+        <button class="aisho-btn" id="aishoBtn" type="button">診断する ▶</button>
+        <p class="aisho-lock">🔒 入れた名前はこの端末にだけ保存されます。<br>結果のURLを送っても、相手には名前は見えないよ。</p>
       </div>
     </section>
 
-    <!-- 名前 -->
-    <section class="screen" id="nameScreen">
-      <div class="panel">
-        <div class="big-ico">✏️</div>
-        <h2 class="title">あなたの名前は？</h2>
-        <label class="name-label" for="nameInput">ニックネームでもOK（12文字まで）</label>
-        <input class="name-input" id="nameInput" type="text" maxlength="12" autocomplete="nickname" placeholder="なまえ">
-        <p class="name-error" id="nameError"></p>
-        <button class="btn" id="nameBtn" type="button">つぎへ ▶</button>
-      </div>
-    </section>
-
-    <!-- 質問 -->
-    <section class="screen" id="quizScreen">
-      <div class="progress">
-        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-        <span id="progressText">1/8</span>
-      </div>
-      <div class="panel" id="questionPanel">
-        <span class="q-num" id="qNum">Q1</span>
-        <p class="q-text" id="qText"></p>
-        <div class="choices" id="choices"></div>
-        <button class="back" id="backBtn" type="button">← ひとつ前にもどる</button>
-      </div>
-    </section>
-
-    <!-- 1人目: 相手に送るURLができた -->
-    <section class="screen" id="linkScreen">
-      <div class="panel">
-        <div class="big-ico">💌</div>
-        <h2 class="title">URLができたよ！</h2>
-        <p class="lead">このURLを、相性を知りたい相手に送ってね。<br>相手がこたえると、ふたりの結果が出るよ！</p>
-        <div id="inviteShare"></div>
-        <p class="note" id="secretNote" hidden>🤫 ひみつモード：相手には「ふたりの相性チェック」として表示されるよ。<br>
-          相手から結果のURLが届いたら、この端末で開くと恋愛の結果が見られます。</p>
-        <p class="note">※ URLの中に、あなたの名前と答えが入っています。<br>結果は、相手から結果のURLを送ってもらうと見られるよ。</p>
-      </div>
-    </section>
-
-    <!-- 診断中 -->
     <section class="screen" id="loadingScreen">
       <div class="panel">
-        <div class="ball">💞</div>
+        <div class="ball">🔮</div>
         <p class="thinking">ふたりの相性をしらべ中<span class="dots"><span>.</span><span>.</span><span>.</span></span></p>
       </div>
     </section>
@@ -109,14 +79,13 @@
     <!-- 結果 -->
     <section class="screen" id="resultScreen">
       <div class="panel">
-        <p class="secret-banner" id="secretBanner" hidden>🤫 ひみつモードの結果です。相手の画面では恋愛占いとは表示されていません。</p>
-        <div class="couple"><span id="rNameA"></span><span class="heart">💗</span><span id="rNameB"></span></div>
+        <div class="couple" id="couple"></div>
         <div class="meter">
           <svg viewBox="0 0 150 150" aria-hidden="true">
             <defs>
               <linearGradient id="meterGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#ffb3d9"/>
-                <stop offset="1" stop-color="#ff4f8b"/>
+                <stop offset="0" stop-color="#ff8cc0"/>
+                <stop offset="1" stop-color="#9b6bff"/>
               </linearGradient>
             </defs>
             <circle class="track" cx="75" cy="75" r="64"/>
@@ -129,29 +98,27 @@
         <div class="cats" id="rCats"></div>
         <div class="info">
           <div class="info-box wide"><h3>💡 ふたりへのアドバイス</h3><p id="rAdvice"></p></div>
-          <div class="info-box wide"><h3>📍 おすすめデートスポット</h3><p id="rSpot"></p></div>
+          <div class="info-box"><h3>📍 おすすめスポット</h3><p id="rLucky"></p></div>
+          <div class="info-box"><h3>🎨 ラッキーカラー</h3><p id="rColor"></p></div>
         </div>
-
-        <!-- 2人目が見ているときだけ: 結果を1人目に送る -->
-        <div id="sendBack" hidden>
-          <p class="note" id="sendBackLead"></p>
-          <div id="resultShare"></div>
+        <p class="lock-box" id="lockBox"></p>
+        <!-- 自分の端末のときだけ: 結果を送る -->
+        <div id="shareBox" hidden>
+          <div id="shareArea"></div>
         </div>
-
         <div class="actions">
-          <a class="btn" href="./">💘 自分も誰かと占う</a>
-          <a class="btn sub" href="../">🔮 占い一覧へ</a>
+          <a class="btn" href="./">💞 ほかの名前で診断</a>
+          <a class="btn sub" href="../../">🏠 トップへ</a>
         </div>
       </div>
     </section>
 
-    <!-- URL がこわれているとき -->
     <section class="screen" id="errorScreen">
       <div class="panel">
-        <div class="err-ico">💔</div>
+        <div class="err-ico">🤔</div>
         <h2 class="title">URLが読みこめなかった…</h2>
-        <p class="lead">URLが途中で切れているかもしれません。<br>送ってくれた人に、もう一度URLを送ってもらってね。</p>
-        <a class="btn" href="./">💘 自分から占いをはじめる</a>
+        <p class="lead">URLが途中で切れているかもしれません。</p>
+        <a class="btn" href="./">💞 相性診断をする</a>
       </div>
     </section>
   </main>
@@ -159,6 +126,93 @@
 <script src="../../audio.js"></script>
 <script src="../../common.js"></script>
 <script src="../fortune.js"></script>
-<script src="../pair-core.js"></script>
+<script src="../aisho.js"></script>
+<script>
+  const show = Fortune.screens(["formScreen", "loadingScreen", "resultScreen", "errorScreen"]);
+  const params = new URLSearchParams(location.search);
+
+  if (params.has("r")) {
+    let res = null;
+    try {
+      res = Aisho.read(params.get("r"));
+    } catch (e) {
+      show("errorScreen");
+    }
+    // 自分で診断した直後だけ「しらべ中」をはさむ（見たことのある結果や、送られてきた結果はすぐ出す）
+    if (res) {
+      const seenKey = "uranai-aisho-seen:" + params.get("r").slice(0, 60);
+      if (res.names && !sessionStorage.getItem(seenKey)) {
+        sessionStorage.setItem(seenKey, "1");
+        Fortune.loading(show, "loadingScreen", 1600, () => render(res));
+      } else {
+        render(res);
+      }
+    }
+  } else {
+    show("formScreen");
+    Aisho.bindForm({
+      a: document.getElementById("nameA"),
+      b: document.getElementById("nameB"),
+      btn: document.getElementById("aishoBtn"),
+      err: document.getElementById("aishoErr"),
+    });
+  }
+
+  function render(res) {
+    // 名前：この端末で診断したものなら名前を出し、それ以外は「？？？」
+    const couple = document.getElementById("couple");
+    couple.innerHTML = "";
+    const nameEl = n => {
+      const s = document.createElement("span");
+      if (n) {
+        s.textContent = n;
+      } else {
+        s.textContent = "？？？";
+        s.className = "hidden-name";
+      }
+      return s;
+    };
+    const x = document.createElement("span");
+    x.className = "x";
+    x.textContent = "💞";
+    couple.append(nameEl(res.names && res.names.a), x, nameEl(res.names && res.names.b));
+
+    document.getElementById("rTier").textContent = res.tier;
+    document.getElementById("rMsg").textContent = res.msg;
+    document.getElementById("rAdvice").textContent = res.advice;
+    document.getElementById("rLucky").textContent = res.lucky;
+    document.getElementById("rColor").textContent = res.color;
+
+    const box = document.getElementById("rCats");
+    box.innerHTML = "";
+    res.cats.forEach(c => {
+      const name = document.createElement("span");
+      name.textContent = c.name;
+      const bar = document.createElement("div");
+      bar.className = "cat-bar";
+      bar.innerHTML = `<i data-w="${c.score}"></i>`;
+      const num = document.createElement("b");
+      num.textContent = c.score + "%";
+      box.append(name, bar, num);
+    });
+
+    const lock = document.getElementById("lockBox");
+    if (res.names) {
+      lock.textContent = "🔒 名前はこの端末にだけ保存されています。このURLを送っても、相手の画面では名前は「？？？」になるよ。";
+      document.getElementById("shareBox").hidden = false;
+      Fortune.share(document.getElementById("shareArea"), location.href, `💞 相性診断の結果は… ${res.total}%！ だれとだれの相性かはひみつ🤫`);
+    } else {
+      lock.textContent = "🔒 だれとだれの相性かは、ひみつ。名前は診断した人の端末にだけ保存されています。";
+    }
+
+    show("resultScreen");
+    Sound.se("accent", { volume: 0.9 });
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      document.getElementById("meterFill").style.strokeDashoffset = 402 * (1 - res.total / 100);
+      box.querySelectorAll("i").forEach(i => (i.style.width = i.dataset.w + "%"));
+    }));
+    Fortune.countUp(document.getElementById("rPct"), res.total, 1600);
+  }
+</script>
 </body>
 </html>

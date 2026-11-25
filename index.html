@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>UraNai+（うらないプラス）</title>
-<meta name="description" content="ポップでかわいい占いサイト。タイプ診断・今日の運勢・タロット・おみくじに、URLを送って相手と遊べる相性占いやクイズも！">
+<meta name="description" content="質問にこたえるタイプ診断と、名前で占う相性診断ができる占いサイト。相性診断の名前は相手にはひみつ！">
 <!-- OGP（SNS で URL を貼ったときに出るカード）。画像は tools/make-ogp.ps1 で作る -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="UraNai+（うらないプラス）">
 <meta property="og:title" content="UraNai+（うらないプラス）">
-<meta property="og:description" content="ポップでかわいい占いサイト。タイプ診断・今日の運勢・タロット・おみくじに、URLを送って相手と遊べる相性占いやクイズも！">
+<meta property="og:description" content="質問にこたえるタイプ診断と、名前で占う相性診断ができる占いサイト。相性診断の名前は相手にはひみつ！">
 <meta property="og:url" content="https://kaikomziu.github.io/uranai-plus/">
 <meta property="og:image" content="https://kaikomziu.github.io/uranai-plus/ogp.png">
 <meta property="og:image:width" content="1200">
@@ -20,10 +20,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=M+PLUS+Rounded+1c:wght@500;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="list/aisho.css">
 <style>
-  html, body { height: 100%; }
+  html { scroll-behavior: smooth; }
   body {
-    overflow: hidden;
     /* トップだけは登場演出のあとにタスクバーとプレイヤーが出てくる */
     --bar-delay: 3s;
     --player-delay: 3.2s;
@@ -43,7 +43,7 @@
   .hero {
     position: relative;
     z-index: 1;
-    height: 100%;
+    min-height: 100svh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -127,75 +127,75 @@
     animation: pop 0.6s cubic-bezier(.3,1.6,.5,1) 1.6s both;
   }
 
-  /* ===== タイトルの下: 占いの入口 ===== */
-  .entry {
-    margin-top: 28px;
-    width: min(420px, 100%);
+  /* 下にスクロールできることを示す矢印 */
+  .scroll-hint {
+    margin-top: 30px;
+    color: #9b6bff;
+    font-size: 13px;
+    text-decoration: none;
+    animation: pop 0.6s cubic-bezier(.3,1.6,.5,1) 1.9s both;
+  }
+  .scroll-hint span { display: block; font-size: 20px; animation: hintBob 1.4s ease-in-out infinite; }
+
+  /* ===== 下の2つのセクション（診断 → 相性診断） ===== */
+  .sections {
+    position: relative;
+    z-index: 1;
+    width: min(560px, 100%);
+    margin: 0 auto;
+    padding: 0 16px 120px;
+    display: grid;
+    gap: 40px;
+  }
+
+  .sec-label {
+    margin-bottom: 12px;
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: #9b8bc4;
+  }
+
+  .type-card {
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 14px 16px;
-    border-radius: 22px;
+    padding: 18px;
+    border-radius: 26px;
     background: #fff;
     border: 3px solid #fff;
-    box-shadow: 0 6px 0 #ffc4de, 0 12px 30px rgba(255, 95, 162, 0.18);
+    box-shadow: 0 8px 0 #ffc4de, 0 16px 40px rgba(255, 95, 162, 0.15);
     color: inherit;
     text-decoration: none;
-    text-align: left;
-    animation: pop 0.6s cubic-bezier(.3,1.6,.5,1) 1.9s both;
     transition: transform 0.15s, box-shadow 0.15s;
   }
+  .type-card:hover { transform: translateY(-3px); }
+  .type-card:active { transform: translateY(3px); box-shadow: 0 3px 0 #ffc4de; }
+  .type-ico { flex: none; width: 64px; height: 64px; display: grid; place-items: center; border-radius: 20px; background: linear-gradient(135deg, #ffd6ec, #e3d9ff); font-size: 34px; }
+  .type-text { flex: 1; min-width: 0; }
+  .type-title { display: block; font-size: 22px; color: #ff5fa2; }
+  .type-desc { display: block; margin-top: 2px; font-size: 13px; font-weight: 500; color: #7a6e98; line-height: 1.6; }
+  .type-go { flex: none; padding: 9px 15px; border-radius: 999px; background: linear-gradient(135deg, #ff8cc0, #b69bff); color: #fff; font-size: 14px; box-shadow: 0 3px 0 rgba(118, 70, 224, 0.3); }
 
-  .entry:hover { transform: translateY(-3px); box-shadow: 0 9px 0 #ffc4de, 0 16px 34px rgba(255, 95, 162, 0.22); }
-  .entry:active { transform: translateY(3px); box-shadow: 0 2px 0 #ffc4de; }
-
-  .entry-ico {
-    flex: none;
-    width: 56px;
-    height: 56px;
-    display: grid;
-    place-items: center;
-    border-radius: 18px;
-    background: linear-gradient(135deg, #ffd6ec, #e3d9ff);
-    font-size: 30px;
-  }
-
-  .entry-text { flex: 1; min-width: 0; }
-  .entry-title, .entry-desc { display: block; }
-  .entry-title { font-size: 19px; color: #ff5fa2; }
-  .entry-desc { margin-top: 2px; font-size: 12px; font-weight: 500; color: #7a6e98; line-height: 1.5; }
-
-  .entry-go {
-    flex: none;
-    padding: 8px 14px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #ff8cc0, #b69bff);
-    color: #fff;
-    font-size: 14px;
-    box-shadow: 0 3px 0 rgba(118, 70, 224, 0.3);
-  }
-
-  .more {
-    margin-top: 14px;
-    color: #7646e0;
-    font-size: 13px;
-    text-decoration: none;
-    animation: pop 0.6s cubic-bezier(.3,1.6,.5,1) 2.1s both;
-  }
-
-  .more:hover { text-decoration: underline; }
-
+  /* スマホ幅では「はじめる」をカードの下に回す */
   @media (max-width: 480px) {
-    .entry { gap: 10px; padding: 12px; }
-    .entry-ico { width: 48px; height: 48px; font-size: 26px; }
-    .entry-go { padding: 7px 11px; font-size: 13px; }
+    .type-card { flex-wrap: wrap; gap: 12px; padding: 16px; }
+    .type-ico { width: 54px; height: 54px; font-size: 28px; }
+    .type-go { width: 100%; text-align: center; }
+  }
+
+  /* 上のプレイヤーに隠れないよう、飛んだときに少し下で止める */
+  .sections section { scroll-margin-top: 90px; }
+
+  @keyframes hintBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
   }
 
   /* 画面の高さが低いときは上に詰める */
   @media (max-height: 640px) {
     .hero { padding-bottom: 80px; }
     .sub { margin-top: 16px; }
-    .entry { margin-top: 18px; }
   }
 
   @keyframes drop {
@@ -239,10 +239,6 @@
   <span class="deco" style="--x:84%;--y:16%;--s:40px;--d:6s;--delay:-1s">🌙</span>
   <span class="deco" style="--x:6%;--y:72%;--s:30px;--d:4.5s;--delay:-2s">💖</span>
   <span class="deco" style="--x:86%;--y:66%;--s:36px;--d:5.5s;--delay:-3s">🔮</span>
-  <span class="deco" style="--x:48%;--y:84%;--s:26px;--d:4s;--delay:-1.5s">✨</span>
-  <span class="deco" style="--x:30%;--y:8%;--s:22px;--d:4.8s;--delay:-2.5s">✨</span>
-  <span class="deco" style="--x:92%;--y:44%;--s:24px;--d:5.2s;--delay:-0.5s">⭐</span>
-  <span class="deco" style="--x:4%;--y:42%;--s:26px;--d:6.2s;--delay:-4s">🍀</span>
 
   <main class="hero">
     <h1 class="logo" aria-label="UraNai+">
@@ -250,28 +246,53 @@
     </h1>
     <p class="sub">うらないプラス</p>
 
-    <!-- タイトルの下: タイプ診断の入口（中身は common.js の FORTUNES から） -->
-    <a class="entry" id="entry" href="list/">
-      <span class="entry-ico" id="entryIco">🧩</span>
-      <span class="entry-text">
-        <span class="entry-title" id="entryTitle">タイプ診断</span>
-        <span class="entry-desc" id="entryDesc"></span>
-      </span>
-      <span class="entry-go">はじめる ▶</span>
-    </a>
-    <a class="more" href="list/">🔮 ほかの占いも見る →</a>
+    <a class="scroll-hint" href="#shindan">診断をはじめる<span>▼</span></a>
   </main>
+
+  <div class="sections">
+    <!-- 1. ふつうの診断 -->
+    <section id="shindan">
+      <p class="sec-label">― 診断 ―</p>
+      <a class="type-card" id="typeCard" href="list/50o72qn/">
+        <span class="type-ico">🧩</span>
+        <span class="type-text">
+          <span class="type-title">タイプ診断</span>
+          <span class="type-desc">10この質問にこたえると、あなたが6タイプのどれかがわかるよ！</span>
+        </span>
+        <span class="type-go">はじめる ▶</span>
+      </a>
+    </section>
+
+    <!-- 2. 相性診断（名前で占う。名前は相手にはひみつ） -->
+    <section id="aisho">
+      <p class="sec-label">― 相性診断 ―</p>
+      <div class="aisho-card">
+        <h2 class="aisho-head">💞 相性診断</h2>
+        <p class="aisho-lead">ふたりの名前を入れるだけで、相性がわかるよ。</p>
+        <div class="aisho-names">
+          <div class="aisho-field"><label for="nameA">あなたの名前</label><input class="aisho-input" id="nameA" maxlength="12" autocomplete="off" placeholder="なまえ"></div>
+          <span class="aisho-x">💞</span>
+          <div class="aisho-field"><label for="nameB">相手の名前</label><input class="aisho-input" id="nameB" maxlength="12" autocomplete="off" placeholder="なまえ"></div>
+        </div>
+        <p class="aisho-err" id="aishoErr"></p>
+        <button class="aisho-btn" id="aishoBtn" type="button">診断する ▶</button>
+        <p class="aisho-lock">🔒 入れた名前はこの端末にだけ保存されます。<br>結果のURLを送っても、相手には名前は見えないよ。</p>
+      </div>
+    </section>
+  </div>
 
 <script src="audio.js"></script>
 <script src="common.js"></script>
+<script src="list/aisho.js"></script>
 <script>
-  // ===== タイトル下の入口をタイプ診断にする =====
-  const typeTest = FORTUNES.find(f => f.title === "タイプ診断");
-  document.getElementById("entry").href = fortuneUrl(typeTest);
-  document.getElementById("entryIco").textContent = typeTest.emoji;
-  document.getElementById("entryTitle").textContent = typeTest.title;
-  document.getElementById("entryDesc").textContent = typeTest.desc;
-  document.getElementById("entry").addEventListener("pointerdown", () => Sound.se("click", { volume: 0.7 }));
+  // ===== 診断・相性診断 =====
+  document.getElementById("typeCard").addEventListener("pointerdown", () => Sound.se("click", { volume: 0.7 }));
+  Aisho.bindForm({
+    a: document.getElementById("nameA"),
+    b: document.getElementById("nameB"),
+    btn: document.getElementById("aishoBtn"),
+    err: document.getElementById("aishoErr"),
+  });
 
   // ===== 登場演出に合わせた効果音（音が出せる状態のときだけ鳴る） =====
   document.querySelectorAll(".logo .ch").forEach((ch, i) => {

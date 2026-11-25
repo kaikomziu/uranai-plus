@@ -2,32 +2,15 @@
 // 使い方: audio.js のあとに <script src="(サイトの一番上)/common.js"></script> を読み込む。
 // サイトの一番上のフォルダは、このファイルの場所から自動で求めるので、どの階層のページでも動く。
 
-const VERSION = "v0.10";
+const VERSION = "v0.11";
 
 // サイトの一番上（index.html があるフォルダ）の URL
 const SITE_ROOT = new URL(".", document.currentScript.src);
 const siteUrl = path => new URL(path, SITE_ROOT).href;
 
-// 占いの一覧（/list/ のページとトップの入口がここを見る）
-// id はランダムな英数字。URL は /list/<id>/ になる
-const FORTUNES = [
-  // share: true は「URLを送って相手とあそぶ」占い（一覧に「ふたりで」と出る）
-  { id: "50o72qn", emoji: "🧩", title: "タイプ診断", color: "#ff5fa2",
-    desc: "10この質問に答えると、あなたが6タイプのどれかがわかるよ！" },
-  { id: "j0bajrr", emoji: "🌞", title: "今日の運勢", color: "#ff8a3d",
-    desc: "名前と誕生日で、今日の運勢をチェック！ 毎日かわるよ。" },
-  { id: "p9e88lj", emoji: "🃏", title: "タロット占い", color: "#7646e0",
-    desc: "22枚のカードからメッセージをひこう。1枚引きと3枚引きがえらべるよ。" },
-  { id: "0ll1z1i", emoji: "⛩️", title: "おみくじ", color: "#e5484d",
-    desc: "1日1回ひけるおみくじ。大吉が出るかな？" },
-  { id: "5v8zmrv", emoji: "💘", title: "恋愛相性占い", color: "#ff4f8b", share: true,
-    desc: "あなたがこたえてURLを送ると、相手もこたえて、ふたりの相性がわかるよ！ 恋愛占いだとバレないひみつモードも。" },
-  { id: "8zn10ev", emoji: "🤝", title: "友情相性占い", color: "#1b8fd9", share: true,
-    desc: "友だちにURLを送って、ふたりの友情相性をチェック！" },
-  { id: "v0g2okb", emoji: "🙋", title: "わたしのこと知ってる？クイズ", color: "#e09000", share: true,
-    desc: "自分のことをこたえてURLを送ると、相手があなたの答えを当てるクイズに！" },
-];
-const fortuneUrl = f => siteUrl("list/" + f.id + "/");
+// 診断のページ（URL は /list/<ランダムな英数字>/）
+const TYPE_URL = siteUrl("list/50o72qn/");   // タイプ診断
+const AISHO_URL = siteUrl("list/5v8zmrv/");  // 相性診断
 
 (() => {
   // ---------- 部品をページに差し込む ----------
@@ -35,7 +18,6 @@ const fortuneUrl = f => siteUrl("list/" + f.id + "/");
   <nav class="taskbar">
     <a class="tb-logo" href="${siteUrl("")}">UraNai+</a>
     <span class="tb-sep"></span>
-    <a class="tb-btn" href="${siteUrl("list/")}"><span class="ico">🔮</span><span class="long">占い一覧</span><span class="short">一覧</span></a>
     <button class="tb-btn" id="openChangelog" type="button"><span class="ico">📜</span><span class="long">更新履歴</span><span class="short">履歴</span></button>
     <!-- 作者（かるわか）のほかのゲーム一覧を新しいタブで開く -->
     <a class="tb-btn" href="https://kaikomziu.github.io/game-links/" target="_blank" rel="noopener"><span class="ico">🎮</span><span class="long">作者の別のゲームで遊ぶ</span><span class="short">ゲーム</span></a>
