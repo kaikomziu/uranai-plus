@@ -2,7 +2,7 @@
 // 使い方: audio.js のあとに <script src="(サイトの一番上)/common.js"></script> を読み込む。
 // サイトの一番上のフォルダは、このファイルの場所から自動で求めるので、どの階層のページでも動く。
 
-const VERSION = "v0.09";
+const VERSION = "v0.10";
 
 // サイトの一番上（index.html があるフォルダ）の URL
 const SITE_ROOT = new URL(".", document.currentScript.src);
@@ -21,7 +21,7 @@ const FORTUNES = [
   { id: "0ll1z1i", emoji: "⛩️", title: "おみくじ", color: "#e5484d",
     desc: "1日1回ひけるおみくじ。大吉が出るかな？" },
   { id: "5v8zmrv", emoji: "💘", title: "恋愛相性占い", color: "#ff4f8b", share: true,
-    desc: "あなたがこたえてURLを送ると、相手もこたえて、ふたりの相性がわかるよ！" },
+    desc: "あなたがこたえてURLを送ると、相手もこたえて、ふたりの相性がわかるよ！ 恋愛占いだとバレないひみつモードも。" },
   { id: "8zn10ev", emoji: "🤝", title: "友情相性占い", color: "#1b8fd9", share: true,
     desc: "友だちにURLを送って、ふたりの友情相性をチェック！" },
   { id: "v0g2okb", emoji: "🙋", title: "わたしのこと知ってる？クイズ", color: "#e09000", share: true,
