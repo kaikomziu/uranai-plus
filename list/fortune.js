@@ -201,7 +201,7 @@ const Fortune = (() => {
       row.appendChild(a);
       return a;
     };
-    if (navigator.share) add("native", "📤 送る").onclick = () => navigator.share({ text, url }).catch(() => {});
+    if (navigator.share) add("native", "送る").onclick = () => navigator.share({ text, url }).catch(() => {});
     add("line", "LINEで送る", "https://line.me/R/share?text=" + encodeURIComponent(text + "\n" + url));
     add("x", "𝕏 でポスト", "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(url));
   }

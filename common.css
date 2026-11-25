@@ -1,30 +1,31 @@
-/* ===== 全ページ共通の見た目（背景・タスクバー・BGMプレイヤー・ウィンドウ） ===== */
+/* ===== 全ページ共通の見た目（シンプル・ミニマル） ===== */
+/* 色と文字はここの変数でまとめて変えられる */
+:root {
+  --bg: #f3f2ee;        /* 背景（あたたかいグレー） */
+  --surface: #ffffff;   /* カード */
+  --ink: #15161a;       /* 文字（ほぼ黒） */
+  --muted: #72757e;     /* うすい文字 */
+  --line: #dedcd5;      /* 線 */
+  --accent: #3b47e0;    /* アクセント（コバルトブルー） */
+  --accent-soft: #e8eafc;
+  --radius: 18px;
+  --font: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-en: "Outfit", "Zen Kaku Gothic New", sans-serif;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body { min-height: 100%; }
 
 body {
-  /* ゆめかわパステルのグラデーション背景 */
-  background: linear-gradient(135deg, #ffd6ec 0%, #e3d9ff 45%, #cdf3ff 100%) fixed;
-  font-family: "M PLUS Rounded 1c", sans-serif;
-  font-weight: 800;
-  color: #4a3d6b;
+  background: var(--bg);
+  font-family: var(--font);
+  font-weight: 500;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ふわふわ浮かぶ飾り（星・ハート・月） */
-.deco {
-  position: fixed;
-  font-size: var(--s);
-  left: var(--x);
-  top: var(--y);
-  opacity: 0.9;
-  /* 出現は scale/opacity、ふわふわは transform なので両立できる */
-  animation: decoIn 0.6s cubic-bezier(.3,1.6,.5,1) both, floaty var(--d) ease-in-out infinite;
-  animation-delay: var(--in, 0s), var(--delay);
-  pointer-events: none;
-  user-select: none;
-  z-index: 0;
-}
+::selection { background: var(--accent); color: #fff; }
 
 /* ===== 画面一番下のタスクバー ===== */
 .taskbar {
@@ -33,63 +34,55 @@ body {
   bottom: 12px;
   transform: translateX(-50%);
   z-index: 10;
-  width: min(760px, calc(100% - 24px));
-  height: 56px;
+  width: min(720px, calc(100% - 24px));
+  height: 52px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 10px 0 16px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 3px solid #fff;
-  box-shadow: 0 6px 0 rgba(155, 107, 255, 0.25), 0 10px 30px rgba(155, 107, 255, 0.2);
-  animation: barIn 0.7s cubic-bezier(.3,1.4,.5,1) var(--bar-delay, 0.2s) both;
+  gap: 6px;
+  padding: 0 8px 0 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  box-shadow: 0 6px 24px rgba(20, 22, 26, 0.06);
+  animation: barIn 0.6s cubic-bezier(.2,.8,.2,1) var(--bar-delay, 0.1s) both;
 }
 
 .tb-logo {
-  font-family: "Fredoka", sans-serif;
-  font-weight: 700;
-  font-size: 20px;
-  background: linear-gradient(90deg, #ff5fa2, #ffbf1f, #3ec97a, #3fb4ff, #9b6bff);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  font-family: var(--font-en);
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
   white-space: nowrap;
   text-decoration: none;
+  margin-right: 6px;
 }
+.tb-logo span { color: var(--accent); }
 
-.tb-sep {
-  width: 2px;
-  height: 26px;
-  border-radius: 2px;
-  background: #e6dcff;
-}
+.tb-sep { width: 1px; height: 20px; background: var(--line); margin-right: 4px; }
 
 .tb-btn {
   display: flex;
   align-items: center;
   gap: 6px;
-  height: 38px;
-  padding: 0 14px;
+  height: 36px;
+  padding: 0 12px;
   border: none;
-  border-radius: 12px;
-  background: #fff;
-  color: #7646e0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
   font-family: inherit;
-  font-weight: 800;
-  font-size: 14px;
+  font-weight: 500;
+  font-size: 13px;
   cursor: pointer;
-  box-shadow: 0 3px 0 #e2d6ff;
-  transition: transform 0.12s, box-shadow 0.12s;
   white-space: nowrap;
   text-decoration: none;
+  transition: background 0.15s;
 }
-
-.tb-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 0 #e2d6ff; }
-.tb-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #e2d6ff; }
-.tb-btn .ico { font-size: 18px; }
+.tb-btn:hover { background: #f0efea; }
+.tb-btn .ico { color: var(--muted); font-size: 13px; }
 .tb-btn .short { display: none; }
 
 .tb-right {
@@ -97,32 +90,22 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-family: "Fredoka", sans-serif;
-  color: #9b6bff;
+  font-family: var(--font-en);
+  color: var(--muted);
   white-space: nowrap;
 }
+.tb-version { font-size: 12px; padding: 3px 8px; border: 1px solid var(--line); border-radius: 999px; }
+.tb-clock { font-size: 14px; font-weight: 500; color: var(--ink); min-width: 3em; text-align: right; }
 
-.tb-version {
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: #f1ebff;
-  font-size: 13px;
-}
-
-.tb-clock { font-size: 16px; font-weight: 600; }
-
-/* 中くらいの幅では時計を隠す */
 @media (max-width: 640px) {
   .tb-clock { display: none; }
   .tb-btn .long { display: none; }
   .tb-btn .short { display: inline; }
 }
-
-/* スマホ幅ではロゴも隠してボタンを詰める */
-@media (max-width: 480px) {
-  .tb-logo, .tb-logo + .tb-sep { display: none; }
-  .taskbar { gap: 6px; padding: 0 8px; }
-  .tb-btn { padding: 0 10px; font-size: 13px; gap: 4px; }
+@media (max-width: 420px) {
+  .tb-sep { display: none; }
+  .taskbar { padding: 0 6px 0 12px; gap: 2px; }
+  .tb-btn { padding: 0 9px; }
 }
 
 /* ===== 右上の BGM プレイヤー（半透明） ===== */
@@ -131,63 +114,42 @@ body {
   top: 12px;
   right: 12px;
   z-index: 9;
-  width: min(300px, calc(100% - 24px));
+  width: min(280px, calc(100% - 24px));
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 8px 12px 8px 8px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 2px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 4px 16px rgba(155, 107, 255, 0.15);
-  color: #7646e0;
-  opacity: 0.75;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(222, 220, 213, 0.9);
+  color: var(--ink);
+  opacity: 0.8;
   transition: opacity 0.2s, background 0.2s;
-  animation: playerIn 0.6s cubic-bezier(.3,1.4,.5,1) var(--player-delay, 0.3s) both;
+  animation: playerIn 0.6s cubic-bezier(.2,.8,.2,1) var(--player-delay, 0.2s) both;
 }
-
-.player:hover,
-.player:focus-within { opacity: 1; background: rgba(255, 255, 255, 0.65); }
+.player:hover, .player:focus-within { opacity: 1; background: rgba(255, 255, 255, 0.85); }
 
 .pl-btn {
   flex: none;
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   border: none;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ff8cc0, #b69bff);
+  background: var(--ink);
   color: #fff;
-  font-size: 15px;
+  font-size: 11px;
   cursor: pointer;
-  box-shadow: 0 3px 0 rgba(118, 70, 224, 0.3);
-  transition: transform 0.12s;
+  transition: transform 0.12s, background 0.15s;
 }
-
-.pl-btn:active { transform: translateY(2px) scale(0.95); }
+.pl-btn:hover { background: var(--accent); }
+.pl-btn:active { transform: scale(0.94); }
 
 .pl-main { flex: 1; min-width: 0; }
-
-.pl-title {
-  font-size: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.pl-title small { color: #9b8bc4; font-size: 11px; }
-
-.pl-seek {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 2px;
-  font-family: "Fredoka", sans-serif;
-  font-size: 11px;
-  color: #9b8bc4;
-}
-
+.pl-title { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pl-title small { color: var(--muted); font-size: 10px; }
+.pl-seek { display: flex; align-items: center; gap: 6px; margin-top: 3px; font-family: var(--font-en); font-size: 10px; color: var(--muted); }
 .pl-seek span { flex: none; width: 2.6em; text-align: center; }
 
 /* 再生位置・音量のバー */
@@ -196,63 +158,20 @@ body {
   appearance: none;
   flex: 1;
   min-width: 0;
-  height: 6px;
+  height: 3px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #ff8cc0 0%, #b69bff var(--p, 0%), rgba(155, 107, 255, 0.2) var(--p, 0%));
+  background: linear-gradient(90deg, var(--ink) 0%, var(--ink) var(--p, 0%), #d9d7d0 var(--p, 0%));
   outline: none;
   cursor: pointer;
 }
+.bar::-webkit-slider-thumb { -webkit-appearance: none; width: 11px; height: 11px; border-radius: 50%; background: var(--ink); }
+.bar::-moz-range-thumb { width: 11px; height: 11px; border: none; border-radius: 50%; background: var(--ink); }
 
-.bar::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #fff;
-  border: 3px solid #b69bff;
-}
-
-.bar::-moz-range-thumb {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #fff;
-  border: 3px solid #b69bff;
-}
-
-.pl-side {
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.pl-icon {
-  border: none;
-  background: none;
-  font-size: 15px;
-  line-height: 1;
-  cursor: pointer;
-  padding: 2px;
-}
-
-.pl-credit {
-  border: none;
-  background: none;
-  color: #9b8bc4;
-  font-family: inherit;
-  font-weight: 800;
-  font-size: 10px;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.pl-vol { width: 56px; flex: none; }
-
-@media (max-width: 480px) {
-  .pl-vol { display: none; }
-}
+.pl-side { flex: none; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.pl-icon { border: none; background: none; font-size: 13px; line-height: 1; cursor: pointer; padding: 2px; filter: grayscale(1); }
+.pl-credit { border: none; background: none; color: var(--muted); font-family: inherit; font-size: 10px; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.pl-vol { width: 50px; flex: none; }
+@media (max-width: 480px) { .pl-vol { display: none; } }
 
 /* ===== ウィンドウ（更新履歴・クレジット） ===== */
 .overlay {
@@ -262,114 +181,77 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px 16px 90px;
-  background: rgba(120, 90, 200, 0.25);
+  padding: 20px 16px 84px;
+  background: rgba(21, 22, 26, 0.35);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s;
 }
-
 .overlay.open { opacity: 1; pointer-events: auto; }
 
 .window {
-  width: min(560px, 100%);
+  width: min(540px, 100%);
   max-height: 100%;
   display: flex;
   flex-direction: column;
-  border-radius: 22px;
-  background: #fff;
-  border: 4px solid #fff;
-  box-shadow: 0 8px 0 #d9c9ff, 0 20px 50px rgba(118, 70, 224, 0.3);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 24px 60px rgba(21, 22, 26, 0.2);
   overflow: hidden;
-  transform: scale(0.85) translateY(20px);
-  transition: transform 0.3s cubic-bezier(.3,1.6,.5,1);
+  transform: translateY(14px);
+  transition: transform 0.3s cubic-bezier(.2,.8,.2,1);
 }
-
-.overlay.open .window { transform: scale(1) translateY(0); }
+.overlay.open .window { transform: none; }
 
 .win-head {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 14px 12px 18px;
-  background: linear-gradient(90deg, #ff8cc0, #b69bff);
-  color: #fff;
-  font-size: 17px;
+  padding: 14px 14px 14px 22px;
+  border-bottom: 1px solid var(--line);
+  font-size: 15px;
+  font-weight: 700;
 }
-
 .win-close {
   margin-left: auto;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border: none;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.35);
-  color: #fff;
-  font-size: 18px;
+  background: #f0efea;
+  color: var(--ink);
+  font-size: 14px;
   line-height: 1;
   cursor: pointer;
 }
+.win-close:hover { background: var(--ink); color: #fff; }
 
-.win-close:hover { background: rgba(255, 255, 255, 0.55); }
-
-.win-body {
-  padding: 8px 22px 22px;
-  overflow-y: auto;
-  color: #4a3d6b;
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 1.8;
-}
+.win-body { padding: 6px 22px 22px; overflow-y: auto; font-size: 14px; line-height: 1.85; }
 
 /* Markdown から作った要素の見た目 */
 .win-body h1 { display: none; } /* 見出し「更新履歴」はウィンドウのタイトルと重複するので隠す */
-.win-body h2 {
-  margin: 18px 0 6px;
-  padding: 4px 12px;
-  display: inline-block;
-  border-radius: 999px;
-  background: #fff0f7;
-  color: #ff5fa2;
-  font-size: 16px;
-}
-.win-body h3 { margin: 12px 0 4px; color: #7646e0; font-size: 15px; }
-.win-body ul { padding-left: 1.3em; }
-.win-body li::marker { color: #ffbf1f; }
+.win-body h2 { margin: 20px 0 4px; font-family: var(--font-en); font-size: 15px; font-weight: 600; color: var(--accent); }
+.win-body h3 { margin: 12px 0 4px; font-size: 14px; }
+.win-body ul { padding-left: 1.2em; }
+.win-body li::marker { color: var(--muted); }
 .win-body p { margin: 6px 0; }
-.win-body code {
-  padding: 1px 6px;
-  border-radius: 6px;
-  background: #f1ebff;
-  font-size: 0.92em;
-}
-.win-body .err { margin-top: 14px; color: #d63d80; }
-
-/* クレジット欄 */
+.win-body code { padding: 1px 6px; border-radius: 6px; background: #f0efea; font-size: 0.92em; }
+.win-body .err { margin-top: 14px; color: #c2334d; }
 .win-body .credit-item { margin: 10px 0; }
-.win-body .credit-item b { color: #7646e0; }
-.win-body a { color: #3fb4ff; }
+.win-body .credit-item b { font-weight: 700; }
+.win-body a { color: var(--accent); }
 
 /* ===== 共通のアニメーション ===== */
-@keyframes pop {
-  from { opacity: 0; transform: scale(0.2) translateY(30px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
 }
-
-@keyframes floaty {
-  0%, 100% { transform: translateY(0) rotate(-8deg); }
-  50% { transform: translateY(-18px) rotate(8deg); }
+@keyframes pop { /* 古い名前のまま使っている所があるので rise と同じ動きにしておく */
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
 }
-
-@keyframes decoIn {
-  from { opacity: 0; scale: 0; }
-  to   { opacity: 0.9; scale: 1; }
-}
-
-@keyframes playerIn {
-  from { opacity: 0; transform: translateX(120%); }
-}
-
+@keyframes playerIn { from { opacity: 0; transform: translateY(-10px); } }
 @keyframes barIn {
-  from { opacity: 0; transform: translate(-50%, 140%); }
-  to   { opacity: 1; transform: translate(-50%, 0); }
+  from { opacity: 0; transform: translate(-50%, 20px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
 }

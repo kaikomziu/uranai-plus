@@ -2,7 +2,7 @@
 // 使い方: audio.js のあとに <script src="(サイトの一番上)/common.js"></script> を読み込む。
 // サイトの一番上のフォルダは、このファイルの場所から自動で求めるので、どの階層のページでも動く。
 
-const VERSION = "v0.11";
+const VERSION = "v0.12";
 
 // サイトの一番上（index.html があるフォルダ）の URL
 const SITE_ROOT = new URL(".", document.currentScript.src);
@@ -16,11 +16,11 @@ const AISHO_URL = siteUrl("list/5v8zmrv/");  // 相性診断
   // ---------- 部品をページに差し込む ----------
   const html = `
   <nav class="taskbar">
-    <a class="tb-logo" href="${siteUrl("")}">UraNai+</a>
+    <a class="tb-logo" href="${siteUrl("")}">UraNai<span>+</span></a>
     <span class="tb-sep"></span>
-    <button class="tb-btn" id="openChangelog" type="button"><span class="ico">📜</span><span class="long">更新履歴</span><span class="short">履歴</span></button>
+    <button class="tb-btn" id="openChangelog" type="button"><span class="long">更新履歴</span><span class="short">履歴</span></button>
     <!-- 作者（かるわか）のほかのゲーム一覧を新しいタブで開く -->
-    <a class="tb-btn" href="https://kaikomziu.github.io/game-links/" target="_blank" rel="noopener"><span class="ico">🎮</span><span class="long">作者の別のゲームで遊ぶ</span><span class="short">ゲーム</span></a>
+    <a class="tb-btn" href="https://kaikomziu.github.io/game-links/" target="_blank" rel="noopener"><span class="long">作者の別のゲームで遊ぶ</span><span class="short">ゲーム</span><span class="ico">↗︎</span></a>
     <div class="tb-right">
       <span class="tb-version">${VERSION}</span>
       <span class="tb-clock" id="clock">--:--</span>
@@ -47,7 +47,7 @@ const AISHO_URL = siteUrl("list/5v8zmrv/");  // 相性診断
   <div class="overlay" id="creditsOverlay" aria-hidden="true">
     <section class="window" role="dialog" aria-modal="true" aria-label="クレジット">
       <div class="win-head">
-        <span>🎵</span><span>クレジット</span>
+        <span>クレジット</span>
         <button class="win-close" type="button" aria-label="閉じる">✕</button>
       </div>
       <div class="win-body">
@@ -64,7 +64,7 @@ const AISHO_URL = siteUrl("list/5v8zmrv/");  // 相性診断
   <div class="overlay" id="changelogOverlay" aria-hidden="true">
     <section class="window" role="dialog" aria-modal="true" aria-label="更新履歴">
       <div class="win-head">
-        <span>📜</span><span>更新履歴</span>
+        <span>更新履歴</span>
         <button class="win-close" type="button" aria-label="閉じる">✕</button>
       </div>
       <div class="win-body" id="changelogBody">読み込み中…</div>

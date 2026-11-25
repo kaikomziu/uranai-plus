@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>UraNai+（うらないプラス）</title>
-<meta name="description" content="質問にこたえるタイプ診断と、名前で占う相性診断ができる占いサイト。相性診断の名前は相手にはひみつ！">
+<meta name="description" content="質問にこたえるタイプ診断と、名前で占う相性診断。相性診断の名前は相手にはわからない。">
 <!-- OGP（SNS で URL を貼ったときに出るカード）。画像は tools/make-ogp.ps1 で作る -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="UraNai+（うらないプラス）">
 <meta property="og:title" content="UraNai+（うらないプラス）">
-<meta property="og:description" content="質問にこたえるタイプ診断と、名前で占う相性診断ができる占いサイト。相性診断の名前は相手にはひみつ！">
+<meta property="og:description" content="質問にこたえるタイプ診断と、名前で占う相性診断。相性診断の名前は相手にはわからない。">
 <meta property="og:url" content="https://kaikomziu.github.io/uranai-plus/">
 <meta property="og:image" content="https://kaikomziu.github.io/uranai-plus/ogp.png">
 <meta property="og:image:width" content="1200">
@@ -18,267 +18,197 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=M+PLUS+Rounded+1c:wght@500;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="common.css">
 <link rel="stylesheet" href="list/aisho.css">
 <style>
   html { scroll-behavior: smooth; }
   body {
     /* トップだけは登場演出のあとにタスクバーとプレイヤーが出てくる */
-    --bar-delay: 3s;
-    --player-delay: 3.2s;
+    --bar-delay: 2.2s;
+    --player-delay: 2.4s;
   }
 
-  /* 飾りが出てくる順番（ロゴの登場が終わってから） */
-  .deco:nth-of-type(1) { --in: 2.2s; }
-  .deco:nth-of-type(2) { --in: 2.3s; }
-  .deco:nth-of-type(3) { --in: 2.4s; }
-  .deco:nth-of-type(4) { --in: 2.5s; }
-  .deco:nth-of-type(5) { --in: 2.6s; }
-  .deco:nth-of-type(6) { --in: 2.7s; }
-  .deco:nth-of-type(7) { --in: 2.8s; }
-  .deco:nth-of-type(8) { --in: 2.9s; }
-
-  /* タイトルは画面中央より少し上 */
+  /* ===== タイトル（画面いっぱい。ロゴは中央より少し上） ===== */
   .hero {
     position: relative;
-    z-index: 1;
     min-height: 100svh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0 16px 14vh;
+    padding: 0 16px 12vh;
     text-align: center;
   }
 
   .logo {
-    font-family: "Fredoka", "M PLUS Rounded 1c", sans-serif;
-    font-weight: 700;
-    font-size: clamp(64px, 14vw, 160px);
+    font-family: var(--font-en);
+    font-weight: 600;
+    font-size: clamp(60px, 15vw, 150px);
     line-height: 1;
+    letter-spacing: -0.035em;
     white-space: nowrap;
-    position: relative;
   }
 
-  /* 「+」が出た瞬間に後ろでパッと広がる光 */
-  .logo::before,
-  .logo::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 1.6em;
-    height: 1.6em;
-    margin: -0.8em 0 0 -0.8em;
-    border-radius: 50%;
-    z-index: -1;
-    pointer-events: none;
-  }
-  .logo::before {
-    background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,207,63,0.45) 40%, transparent 70%);
-    animation: flash 1.1s ease-out 1.25s both;
-  }
-  .logo::after {
-    border: 0.05em solid #ff8cc0;
-    animation: ring 1s ease-out 1.25s both;
-  }
-
-  /* 1文字ずつ色を変えて、順番にぽよんと弾ませる */
+  /* 1文字ずつ、ぼかしが取れながら下からふわっと出る */
   .logo .ch {
     display: inline-block;
-    color: var(--c);
-    -webkit-text-stroke: 0.04em #fff;
-    paint-order: stroke fill;
-    text-shadow: 0 0.06em 0 var(--sh);
-    animation: drop 0.75s cubic-bezier(.3,1.5,.5,1) both, bounce 2.4s ease-in-out infinite;
-    animation-delay: calc(var(--i) * 1.4 + 0.35s), calc(var(--i) * 1.4 + 3s);
+    animation: chIn 0.9s cubic-bezier(.2,.8,.2,1) both;
+    animation-delay: calc(0.25s + var(--i) * 0.07s);
   }
 
-  /* 「+」は丸いバッジにして目立たせる */
+  /* 「+」だけアクセントの色で、くるっと回って出る */
   .logo .plus {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 0.62em;
-    height: 0.62em;
-    margin-left: 0.08em;
-    vertical-align: 0.45em;
-    border-radius: 50%;
-    background: #ffcf3f;
-    color: #fff;
-    font-size: 0.75em;
-    box-shadow: 0 0.06em 0 #f0a400, 0 0 0 0.05em #fff;
-    animation: spinIn 0.7s cubic-bezier(.3,1.6,.5,1) both, spin 4s ease-in-out infinite;
-    animation-delay: 1.1s, 3.2s;
+    display: inline-block;
+    margin-left: 0.04em;
+    color: var(--accent);
+    font-weight: 500;
+    animation: plusIn 0.8s cubic-bezier(.2,.8,.2,1) 0.95s both;
   }
 
-  .logo .plus span { transform: translateY(-0.04em); }
+  .rule {
+    width: 120px;
+    height: 1px;
+    margin: 28px auto 0;
+    background: var(--ink);
+    transform-origin: center;
+    animation: ruleIn 0.8s cubic-bezier(.2,.8,.2,1) 1.25s both;
+  }
 
   .sub {
-    margin-top: 26px;
-    padding: 8px 22px;
-    border-radius: 999px;
-    background: #fff;
-    color: #ff5fa2;
-    font-size: clamp(14px, 2.6vw, 18px);
-    letter-spacing: 0.25em;
-    box-shadow: 0 4px 0 #ffb3d4;
-    animation: pop 0.6s cubic-bezier(.3,1.6,.5,1) 1.6s both;
+    margin-top: 18px;
+    font-size: 13px;
+    letter-spacing: 0.5em;
+    padding-left: 0.5em; /* 字間ぶんのずれを戻して中央に */
+    color: var(--muted);
+    animation: rise 0.7s cubic-bezier(.2,.8,.2,1) 1.45s both;
   }
 
-  /* 下にスクロールできることを示す矢印 */
   .scroll-hint {
-    margin-top: 30px;
-    color: #9b6bff;
-    font-size: 13px;
+    position: absolute;
+    left: 50%;
+    bottom: 92px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-en);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
     text-decoration: none;
-    animation: pop 0.6s cubic-bezier(.3,1.6,.5,1) 1.9s both;
+    animation: fadeIn 0.8s ease 1.8s both;
   }
-  .scroll-hint span { display: block; font-size: 20px; animation: hintBob 1.4s ease-in-out infinite; }
+  .scroll-hint i { width: 1px; height: 34px; background: linear-gradient(var(--ink), transparent); animation: drip 1.8s ease-in-out infinite; }
 
   /* ===== 下の2つのセクション（診断 → 相性診断） ===== */
   .sections {
-    position: relative;
-    z-index: 1;
     width: min(560px, 100%);
     margin: 0 auto;
-    padding: 0 16px 120px;
+    padding: 20px 16px 120px;
     display: grid;
-    gap: 40px;
+    gap: 64px;
   }
+  .sections section { scroll-margin-top: 80px; }
 
-  .sec-label {
-    margin-bottom: 12px;
-    text-align: center;
-    font-size: 13px;
-    letter-spacing: 0.2em;
-    color: #9b8bc4;
-  }
+  .sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; }
+  .sec-num { font-family: var(--font-en); font-size: 13px; color: var(--accent); }
+  .sec-en { font-family: var(--font-en); font-size: 12px; letter-spacing: 0.24em; color: var(--muted); }
+  .sec-line { flex: 1; height: 1px; background: var(--line); }
 
   .type-card {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 18px;
-    border-radius: 26px;
-    background: #fff;
-    border: 3px solid #fff;
-    box-shadow: 0 8px 0 #ffc4de, 0 16px 40px rgba(255, 95, 162, 0.15);
+    gap: 16px;
+    padding: 26px 24px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border: 1px solid var(--line);
     color: inherit;
     text-decoration: none;
-    transition: transform 0.15s, box-shadow 0.15s;
+    transition: border-color 0.2s;
   }
-  .type-card:hover { transform: translateY(-3px); }
-  .type-card:active { transform: translateY(3px); box-shadow: 0 3px 0 #ffc4de; }
-  .type-ico { flex: none; width: 64px; height: 64px; display: grid; place-items: center; border-radius: 20px; background: linear-gradient(135deg, #ffd6ec, #e3d9ff); font-size: 34px; }
+  .type-card:hover { border-color: var(--ink); }
   .type-text { flex: 1; min-width: 0; }
-  .type-title { display: block; font-size: 22px; color: #ff5fa2; }
-  .type-desc { display: block; margin-top: 2px; font-size: 13px; font-weight: 500; color: #7a6e98; line-height: 1.6; }
-  .type-go { flex: none; padding: 9px 15px; border-radius: 999px; background: linear-gradient(135deg, #ff8cc0, #b69bff); color: #fff; font-size: 14px; box-shadow: 0 3px 0 rgba(118, 70, 224, 0.3); }
-
-  /* スマホ幅では「はじめる」をカードの下に回す */
-  @media (max-width: 480px) {
-    .type-card { flex-wrap: wrap; gap: 12px; padding: 16px; }
-    .type-ico { width: 54px; height: 54px; font-size: 28px; }
-    .type-go { width: 100%; text-align: center; }
+  .type-title { display: block; font-size: 24px; font-weight: 700; letter-spacing: 0.02em; }
+  .type-desc { display: block; margin-top: 6px; font-size: 13px; color: var(--muted); line-height: 1.8; }
+  .type-go {
+    flex: none;
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--ink);
+    color: #fff;
+    font-family: var(--font-en);
+    font-size: 18px;
+    transition: background 0.2s, transform 0.2s;
   }
+  .type-card:hover .type-go { background: var(--accent); transform: translateX(3px); }
 
-  /* 上のプレイヤーに隠れないよう、飛んだときに少し下で止める */
-  .sections section { scroll-margin-top: 90px; }
+  .foot { margin-top: -24px; text-align: center; font-family: var(--font-en); font-size: 11px; letter-spacing: 0.2em; color: #a9a7a0; }
 
-  @keyframes hintBob {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(6px); }
+  @keyframes chIn {
+    from { opacity: 0; transform: translateY(0.35em); filter: blur(10px); }
+    to { opacity: 1; transform: none; filter: blur(0); }
   }
-
-  /* 画面の高さが低いときは上に詰める */
-  @media (max-height: 640px) {
-    .hero { padding-bottom: 80px; }
-    .sub { margin-top: 16px; }
+  @keyframes plusIn {
+    from { opacity: 0; transform: rotate(-180deg) scale(0.4); }
+    to { opacity: 1; transform: none; }
   }
-
-  @keyframes drop {
-    0%   { opacity: 0; transform: translateY(-0.8em) rotate(-25deg) scale(0.4); filter: blur(8px); }
-    60%  { opacity: 1; filter: blur(0); }
-    100% { opacity: 1; transform: translateY(0) rotate(0) scale(1); filter: blur(0); }
-  }
-
-  @keyframes spinIn {
-    from { opacity: 0; transform: rotate(-540deg) scale(0); }
-    to   { opacity: 1; transform: rotate(0) scale(1); }
-  }
-
-  @keyframes flash {
-    0%   { opacity: 0; transform: scale(0.2); }
-    25%  { opacity: 1; }
-    100% { opacity: 0; transform: scale(3.5); }
-  }
-
-  @keyframes ring {
-    0%   { opacity: 0; transform: scale(0.3); }
-    20%  { opacity: 1; }
-    100% { opacity: 0; transform: scale(4); }
-  }
-
-  @keyframes bounce {
-    0%, 70%, 100% { transform: translateY(0); }
-    80% { transform: translateY(-0.12em) rotate(-4deg); }
-    90% { transform: translateY(0.02em); }
-  }
-
-  @keyframes spin {
-    0%, 60%, 100% { transform: rotate(0) scale(1); }
-    80% { transform: rotate(180deg) scale(1.15); }
+  @keyframes ruleIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes fadeIn { from { opacity: 0; } }
+  @keyframes drip {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
   }
 </style>
 </head>
 <body>
-  <!-- 背景の飾り -->
-  <span class="deco" style="--x:8%;--y:14%;--s:34px;--d:5s;--delay:0s">⭐</span>
-  <span class="deco" style="--x:84%;--y:16%;--s:40px;--d:6s;--delay:-1s">🌙</span>
-  <span class="deco" style="--x:6%;--y:72%;--s:30px;--d:4.5s;--delay:-2s">💖</span>
-  <span class="deco" style="--x:86%;--y:66%;--s:36px;--d:5.5s;--delay:-3s">🔮</span>
-
   <main class="hero">
     <h1 class="logo" aria-label="UraNai+">
-      <span class="ch" style="--c:#ff5fa2;--sh:#d63d80;--i:0s">U</span><span class="ch" style="--c:#ff8a3d;--sh:#d9661c;--i:0.08s">r</span><span class="ch" style="--c:#ffbf1f;--sh:#d99a00;--i:0.16s">a</span><span class="ch" style="--c:#3ec97a;--sh:#22a35b;--i:0.24s">N</span><span class="ch" style="--c:#3fb4ff;--sh:#1b8fd9;--i:0.32s">a</span><span class="ch" style="--c:#9b6bff;--sh:#7646e0;--i:0.4s">i</span><span class="plus"><span>+</span></span>
+      <span class="ch" style="--i:0">U</span><span class="ch" style="--i:1">r</span><span class="ch" style="--i:2">a</span><span class="ch" style="--i:3">N</span><span class="ch" style="--i:4">a</span><span class="ch" style="--i:5">i</span><span class="plus">+</span>
     </h1>
+    <div class="rule"></div>
     <p class="sub">うらないプラス</p>
-
-    <a class="scroll-hint" href="#shindan">診断をはじめる<span>▼</span></a>
+    <a class="scroll-hint" href="#shindan">SCROLL<i></i></a>
   </main>
 
   <div class="sections">
     <!-- 1. ふつうの診断 -->
     <section id="shindan">
-      <p class="sec-label">― 診断 ―</p>
+      <div class="sec-head"><span class="sec-num">01</span><span class="sec-en">DIAGNOSIS</span><span class="sec-line"></span></div>
       <a class="type-card" id="typeCard" href="list/50o72qn/">
-        <span class="type-ico">🧩</span>
         <span class="type-text">
           <span class="type-title">タイプ診断</span>
-          <span class="type-desc">10この質問にこたえると、あなたが6タイプのどれかがわかるよ！</span>
+          <span class="type-desc">10の質問にこたえると、6つのタイプのどれに近いかがわかります。</span>
         </span>
-        <span class="type-go">はじめる ▶</span>
+        <span class="type-go" aria-hidden="true">→</span>
       </a>
     </section>
 
     <!-- 2. 相性診断（名前で占う。名前は相手にはひみつ） -->
     <section id="aisho">
-      <p class="sec-label">― 相性診断 ―</p>
+      <div class="sec-head"><span class="sec-num">02</span><span class="sec-en">COMPATIBILITY</span><span class="sec-line"></span></div>
       <div class="aisho-card">
-        <h2 class="aisho-head">💞 相性診断</h2>
-        <p class="aisho-lead">ふたりの名前を入れるだけで、相性がわかるよ。</p>
+        <h2 class="aisho-head">相性診断</h2>
+        <p class="aisho-lead">ふたりの名前を入れるだけで、相性がわかります。</p>
         <div class="aisho-names">
           <div class="aisho-field"><label for="nameA">あなたの名前</label><input class="aisho-input" id="nameA" maxlength="12" autocomplete="off" placeholder="なまえ"></div>
-          <span class="aisho-x">💞</span>
+          <span class="aisho-x">×</span>
           <div class="aisho-field"><label for="nameB">相手の名前</label><input class="aisho-input" id="nameB" maxlength="12" autocomplete="off" placeholder="なまえ"></div>
         </div>
         <p class="aisho-err" id="aishoErr"></p>
-        <button class="aisho-btn" id="aishoBtn" type="button">診断する ▶</button>
-        <p class="aisho-lock">🔒 入れた名前はこの端末にだけ保存されます。<br>結果のURLを送っても、相手には名前は見えないよ。</p>
+        <button class="aisho-btn" id="aishoBtn" type="button">診断する</button>
+        <p class="aisho-lock">入れた名前はこの端末にだけ保存されます。<br>結果のURLを送っても、相手には名前は表示されません。</p>
       </div>
     </section>
+
+    <p class="foot">UraNai+</p>
   </div>
 
 <script src="audio.js"></script>
@@ -296,12 +226,11 @@
 
   // ===== 登場演出に合わせた効果音（音が出せる状態のときだけ鳴る） =====
   document.querySelectorAll(".logo .ch").forEach((ch, i) => {
-    // 文字が着地する瞬間（アニメ開始 + 0.45 秒）
-    const delay = parseFloat(getComputedStyle(ch).getPropertyValue("--i")) * 1.4 + 0.35 + 0.45;
-    setTimeout(() => Sound.se("tick", { volume: 0.5, rate: 1 + i * 0.08 }), delay * 1000);
+    // 文字が出てくるタイミング（CSS の animation-delay と同じ計算）
+    setTimeout(() => Sound.se("tick", { volume: 0.35, rate: 1 + i * 0.06 }), (0.35 + i * 0.07) * 1000);
   });
-  setTimeout(() => Sound.se("accent", { volume: 0.9 }), 1250); // 「+」と光の輪
-  setTimeout(() => Sound.se("whoosh", { volume: 0.6 }), 3000); // タスクバー
+  setTimeout(() => Sound.se("accent", { volume: 0.7 }), 1100); // 「+」
+  setTimeout(() => Sound.se("whoosh", { volume: 0.45 }), 2200); // タスクバー
 </script>
 </body>
 </html>

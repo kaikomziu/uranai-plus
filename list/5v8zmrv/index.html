@@ -18,61 +18,56 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=M+PLUS+Rounded+1c:wght@500;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../common.css">
 <link rel="stylesheet" href="../fortune.css">
 <link rel="stylesheet" href="../aisho.css">
 <style>
-  .panel { box-shadow: 0 8px 0 #e2d6ff, 0 16px 40px rgba(155, 107, 255, 0.16); }
+  .couple { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; font-size: clamp(18px, 5vw, 22px); font-weight: 700; }
+  .couple .x { font-family: var(--font-en); font-weight: 400; color: var(--accent); }
+  .couple .hidden-name { color: #b3b1aa; letter-spacing: 0.15em; }
 
-  .couple { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; font-size: clamp(18px, 5vw, 23px); }
-  .couple .x { font-size: 1.3em; animation: aishoBeat 1.2s ease-in-out infinite; }
-  .couple .hidden-name { color: #b0a6c8; letter-spacing: 0.1em; }
-
-  .meter { position: relative; width: 150px; height: 150px; margin: 14px auto 0; }
+  .meter { position: relative; width: 168px; height: 168px; margin: 18px auto 0; }
   .meter svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-  .meter .track { fill: none; stroke: #f1ebff; stroke-width: 14; }
-  .meter .fill { fill: none; stroke: url(#meterGrad); stroke-width: 14; stroke-linecap: round; stroke-dasharray: 402; stroke-dashoffset: 402; transition: stroke-dashoffset 1.6s cubic-bezier(.3,1,.4,1); }
-  .meter .pct { position: absolute; inset: 0; display: grid; place-items: center; font-family: "Fredoka", sans-serif; font-size: 40px; font-weight: 700; color: #7646e0; }
-  .meter .pct small { font-size: 20px; }
+  .meter .track { fill: none; stroke: #ebe9e3; stroke-width: 4; }
+  .meter .fill { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 402; stroke-dashoffset: 402; transition: stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1); }
+  .meter .pct { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-en); font-size: 46px; font-weight: 500; letter-spacing: -0.02em; }
+  .meter .pct small { font-size: 18px; color: var(--muted); }
 
-  .tier { margin-top: 10px; font-size: clamp(22px, 5.6vw, 28px); color: #7646e0; }
-  .tier-msg { margin-top: 10px; font-size: 14px; font-weight: 500; line-height: 1.9; text-align: left; }
+  .tier { margin-top: 12px; font-size: clamp(21px, 5.4vw, 26px); font-weight: 700; }
+  .tier-msg { margin-top: 10px; font-size: 14px; line-height: 1.95; text-align: left; }
 
-  .cats { margin-top: 16px; display: grid; grid-template-columns: max-content 1fr 2.8em; gap: 8px; align-items: center; font-size: 13px; text-align: left; white-space: nowrap; }
-  .cat-bar { height: 10px; border-radius: 999px; background: #f1ebff; overflow: hidden; }
-  .cat-bar i { display: block; height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, #ff8cc0, #b69bff); transition: width 1s cubic-bezier(.3,1.3,.5,1); }
-  .cats b { font-family: "Fredoka", sans-serif; color: #9b6bff; text-align: right; }
+  .cats { margin-top: 18px; display: grid; grid-template-columns: max-content 1fr 2.8em; gap: 10px; align-items: center; font-size: 12px; text-align: left; white-space: nowrap; }
+  .cat-bar { height: 4px; border-radius: 999px; background: #e9e7e1; overflow: hidden; }
+  .cat-bar i { display: block; height: 100%; width: 0; border-radius: 999px; background: var(--ink); transition: width 1s cubic-bezier(.2,.8,.2,1); }
+  .cats b { font-family: var(--font-en); font-weight: 500; color: var(--muted); text-align: right; }
 
-  .lock-box { margin-top: 14px; padding: 10px 12px; border-radius: 14px; background: #faf7ff; font-size: 12px; font-weight: 500; color: #7a6e98; line-height: 1.7; }
-  .err-ico { font-size: 56px; }
+  .lock-box { margin-top: 16px; font-size: 11px; color: var(--muted); line-height: 1.7; }
+  .err-ico { font-family: var(--font-en); font-size: 13px; letter-spacing: 0.24em; color: var(--muted); }
 </style>
 </head>
 <body>
-  <span class="deco" style="--x:6%;--y:22%;--s:28px;--d:5s;--delay:0s">💞</span>
-  <span class="deco" style="--x:88%;--y:76%;--s:30px;--d:6s;--delay:-2s">✨</span>
-
   <main class="page">
     <!-- 名前を入れる -->
     <section class="screen" id="formScreen">
       <div class="aisho-card">
-        <h1 class="aisho-head">💞 相性診断</h1>
-        <p class="aisho-lead">ふたりの名前を入れるだけで、相性がわかるよ。</p>
+        <h1 class="aisho-head">相性診断</h1>
+        <p class="aisho-lead">ふたりの名前を入れるだけで、相性がわかります。</p>
         <div class="aisho-names">
           <div class="aisho-field"><label for="nameA">あなたの名前</label><input class="aisho-input" id="nameA" maxlength="12" autocomplete="off" placeholder="なまえ"></div>
-          <span class="aisho-x">💞</span>
+          <span class="aisho-x">×</span>
           <div class="aisho-field"><label for="nameB">相手の名前</label><input class="aisho-input" id="nameB" maxlength="12" autocomplete="off" placeholder="なまえ"></div>
         </div>
         <p class="aisho-err" id="aishoErr"></p>
-        <button class="aisho-btn" id="aishoBtn" type="button">診断する ▶</button>
-        <p class="aisho-lock">🔒 入れた名前はこの端末にだけ保存されます。<br>結果のURLを送っても、相手には名前は見えないよ。</p>
+        <button class="aisho-btn" id="aishoBtn" type="button">診断する</button>
+        <p class="aisho-lock">入れた名前はこの端末にだけ保存されます。<br>結果のURLを送っても、相手には名前は表示されません。</p>
       </div>
     </section>
 
     <section class="screen" id="loadingScreen">
       <div class="panel">
         <div class="ball">🔮</div>
-        <p class="thinking">ふたりの相性をしらべ中<span class="dots"><span>.</span><span>.</span><span>.</span></span></p>
+        <p class="thinking">相性を診断中<span class="dots"><span>.</span><span>.</span><span>.</span></span></p>
       </div>
     </section>
 
@@ -82,12 +77,6 @@
         <div class="couple" id="couple"></div>
         <div class="meter">
           <svg viewBox="0 0 150 150" aria-hidden="true">
-            <defs>
-              <linearGradient id="meterGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#ff8cc0"/>
-                <stop offset="1" stop-color="#9b6bff"/>
-              </linearGradient>
-            </defs>
             <circle class="track" cx="75" cy="75" r="64"/>
             <circle class="fill" id="meterFill" cx="75" cy="75" r="64"/>
           </svg>
@@ -97,9 +86,9 @@
         <p class="tier-msg" id="rMsg"></p>
         <div class="cats" id="rCats"></div>
         <div class="info">
-          <div class="info-box wide"><h3>💡 ふたりへのアドバイス</h3><p id="rAdvice"></p></div>
-          <div class="info-box"><h3>📍 おすすめスポット</h3><p id="rLucky"></p></div>
-          <div class="info-box"><h3>🎨 ラッキーカラー</h3><p id="rColor"></p></div>
+          <div class="info-box wide"><h3>アドバイス</h3><p id="rAdvice"></p></div>
+          <div class="info-box"><h3>おすすめスポット</h3><p id="rLucky"></p></div>
+          <div class="info-box"><h3>ラッキーカラー</h3><p id="rColor"></p></div>
         </div>
         <p class="lock-box" id="lockBox"></p>
         <!-- 自分の端末のときだけ: 結果を送る -->
@@ -107,18 +96,18 @@
           <div id="shareArea"></div>
         </div>
         <div class="actions">
-          <a class="btn" href="./">💞 ほかの名前で診断</a>
-          <a class="btn sub" href="../../">🏠 トップへ</a>
+          <a class="btn" href="./">ほかの名前で診断</a>
+          <a class="btn sub" href="../../">トップへ</a>
         </div>
       </div>
     </section>
 
     <section class="screen" id="errorScreen">
       <div class="panel">
-        <div class="err-ico">🤔</div>
+        <div class="err-ico">ERROR</div>
         <h2 class="title">URLが読みこめなかった…</h2>
         <p class="lead">URLが途中で切れているかもしれません。</p>
-        <a class="btn" href="./">💞 相性診断をする</a>
+        <a class="btn" href="./">相性診断をする</a>
       </div>
     </section>
   </main>
@@ -174,7 +163,7 @@
     };
     const x = document.createElement("span");
     x.className = "x";
-    x.textContent = "💞";
+    x.textContent = "×";
     couple.append(nameEl(res.names && res.names.a), x, nameEl(res.names && res.names.b));
 
     document.getElementById("rTier").textContent = res.tier;
@@ -198,11 +187,11 @@
 
     const lock = document.getElementById("lockBox");
     if (res.names) {
-      lock.textContent = "🔒 名前はこの端末にだけ保存されています。このURLを送っても、相手の画面では名前は「？？？」になるよ。";
+      lock.textContent = "名前はこの端末にだけ保存されています。このURLを送っても、相手の画面では名前は「？？？」と表示されます。";
       document.getElementById("shareBox").hidden = false;
-      Fortune.share(document.getElementById("shareArea"), location.href, `💞 相性診断の結果は… ${res.total}%！ だれとだれの相性かはひみつ🤫`);
+      Fortune.share(document.getElementById("shareArea"), location.href, `相性診断の結果は ${res.total}%。だれとだれの相性かはひみつ。`);
     } else {
-      lock.textContent = "🔒 だれとだれの相性かは、ひみつ。名前は診断した人の端末にだけ保存されています。";
+      lock.textContent = "だれとだれの相性かは表示されません。名前は診断した人の端末にだけ保存されています。";
     }
 
     show("resultScreen");
