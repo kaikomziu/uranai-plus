@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>タイプ診断 | UraNai+（うらないプラス）</title>
+<meta name="description" content="10この質問にこたえると、あなたが6タイプのどれかがわかるよ！">
+<!-- OGP（SNS で URL を貼ったときに出るカード）。画像は tools/make-ogp.ps1 で作る -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="UraNai+（うらないプラス）">
+<meta property="og:title" content="タイプ診断 | UraNai+（うらないプラス）">
+<meta property="og:description" content="10この質問にこたえると、あなたが6タイプのどれかがわかるよ！">
+<meta property="og:url" content="https://kaikomziu.github.io/uranai-plus/list/50o72qn/">
+<meta property="og:image" content="https://kaikomziu.github.io/uranai-plus/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="UraNai+ うらないプラス">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=M+PLUS+Rounded+1c:wght@500;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../common.css">
+<link rel="stylesheet" href="../fortune.css">
+<style>
+  .type-chips {
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .type-chips span {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--bg);
+    color: var(--c);
+    font-size: 12px;
+  }
+
+  /* 全タイプのスコア */
+  .scores { margin-top: 18px; text-align: left; }
+  .scores h3 { font-size: 13px; color: #9b8bc4; margin-bottom: 6px; }
+
+  /* 3列（名前・バー・%）を全タイプでそろえる */
+  #rScores {
+    display: grid;
+    grid-template-columns: max-content 1fr 2.6em;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .score-row { display: contents; }
+
+  .score-bar {
+    height: 10px;
+    border-radius: 999px;
+    background: #f3eefc;
+    overflow: hidden;
+  }
+
+  .score-bar i {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: var(--c);
+    transition: width 0.9s cubic-bezier(.3,1.3,.5,1);
+  }
+
+  .score-row b { font-family: "Fredoka", sans-serif; color: #9b8bc4; text-align: right; }
+
+</style>
+</head>
+<body>
+  <span class="deco" style="--x:6%;--y:22%;--s:30px;--d:5s;--delay:0s">⭐</span>
+  <span class="deco" style="--x:88%;--y:74%;--s:34px;--d:6s;--delay:-2s">🧩</span>
+  <span class="deco" style="--x:5%;--y:78%;--s:26px;--d:4.6s;--delay:-1s">✨</span>
+
+  <main class="page">
+    <!-- スタート -->
+    <section class="screen show" id="startScreen">
+      <div class="panel">
+        <div class="big-ico">🧩</div>
+        <h1 class="title">タイプ診断</h1>
+        <p class="lead">10この質問に、直感でこたえてね。<br>あなたは6つのタイプのうち、どれかな？</p>
+        <div class="type-chips" id="typeChips"></div>
+        <button class="btn" id="startBtn" type="button">はじめる ▶</button>
+      </div>
+    </section>
+
+    <!-- 質問 -->
+    <section class="screen" id="quizScreen">
+      <div class="progress">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <span id="progressText">1/10</span>
+      </div>
+      <div class="panel" id="questionPanel">
+        <span class="q-num" id="qNum">Q1</span>
+        <p class="q-text" id="qText"></p>
+        <div class="choices" id="choices"></div>
+        <button class="back" id="backBtn" type="button">← ひとつ前にもどる</button>
+      </div>
+    </section>
+
+    <!-- 診断中 -->
+    <section class="screen" id="loadingScreen">
+      <div class="panel">
+        <div class="ball">🔮</div>
+        <p class="thinking">しんだん中<span class="dots"><span>.</span><span>.</span><span>.</span></span></p>
+      </div>
+    </section>
+
+    <!-- 結果 -->
+    <section class="screen" id="resultScreen">
+      <div class="panel" id="resultPanel">
+        <div class="result-head">
+          <div class="result-label">あなたは…</div>
+          <div class="result-ico" id="rIco"></div>
+          <h2 class="result-name" id="rName"></h2>
+          <p class="result-catch" id="rCatch"></p>
+        </div>
+        <p class="result-desc" id="rDesc"></p>
+        <div class="info">
+          <div class="info-box wide"><h3>💪 いいところ</h3><div class="tags" id="rGood"></div></div>
+          <div class="info-box wide"><h3>⚠️ ちょっと気をつけて</h3><p id="rCare"></p></div>
+          <div class="info-box"><h3>🍀 ラッキーアイテム</h3><p id="rItem"></p></div>
+          <div class="info-box"><h3>🎨 ラッキーカラー</h3><p id="rColor"></p></div>
+          <div class="info-box wide"><h3>🤝 相性がいいタイプ</h3><p id="rMatch"></p></div>
+        </div>
+        <div class="scores">
+          <h3>📊 あなたのタイプのわりあい</h3>
+          <div id="rScores"></div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="retryBtn" type="button">🔁 もう一回</button>
+          <a class="btn sub" href="../">🔮 占い一覧へ</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script src="../../audio.js"></script>
+<script src="../../common.js"></script>
+<script>
+  // ===== 6つのタイプ =====
+  const TYPES = {
+    heart: {
+      name: "ハートフルタイプ", emoji: "💖", c: "#ff5fa2", bg: "#fff0f7",
+      catch: "みんなの心をあたためる、やさしさのかたまり",
+      desc: "人の気持ちに気づくのが得意で、だれかが困っているとほうっておけないあなた。いっしょにいるだけで、まわりがホッと安心できる存在です。あなたの「だいじょうぶ？」のひとことに救われている人は、きっとたくさんいますよ。",
+      good: ["思いやり", "聞き上手", "気配り名人"],
+      care: "人に合わせすぎてつかれちゃうことも。たまには自分のきもちを一番にしてOK！",
+      item: "ハンドクリーム", color: "さくらピンク", match: "mood",
+    },
+    mood: {
+      name: "ムードメーカータイプ", emoji: "🎉", c: "#ff8a3d", bg: "#fff3ea",
+      catch: "いるだけで場がパッと明るくなる太陽",
+      desc: "明るくてノリがよく、まわりを笑顔にする天才。あなたがいると、どんな場所もにぎやかで楽しい空気になります。行動力もバツグンで、思い立ったらすぐ動けるのがあなたの強みです。",
+      good: ["明るい", "行動力", "盛り上げ上手"],
+      care: "勢いで約束しすぎちゃうかも。予定はメモしておくと安心！",
+      item: "おそろいのキーホルダー", color: "みかんオレンジ", match: "mypace",
+    },
+    idea: {
+      name: "ひらめきタイプ", emoji: "💡", c: "#e0a400", bg: "#fff8dc",
+      catch: "おもしろいことを次々思いつくアイデアマン",
+      desc: "「こうしたらもっと楽しいかも！」が止まらない、発想力のかたまり。人とちがう見方ができるので、みんなが思いつかないアイデアで周りをおどろかせます。好きなことへの集中力もすごいです。",
+      good: ["発想力", "好奇心", "チャレンジ精神"],
+      care: "興味がうつりやすく、やりかけが増えがち。ひとつ終わらせてから次へ！",
+      item: "カラフルなペン", color: "レモンイエロー", match: "cool",
+    },
+    mypace: {
+      name: "マイペースタイプ", emoji: "🌿", c: "#22a35b", bg: "#eafaf1",
+      catch: "自分のリズムを大切にする、ゆるふわ癒し系",
+      desc: "まわりに流されず、自分のペースでのんびり進めるあなた。あせらない落ち着きが、まわりの人をホッとさせています。ゆっくりでも、最後までちゃんとやりとげる粘り強さも持っています。",
+      good: ["おおらか", "癒し系", "ブレない"],
+      care: "のんびりしすぎて締め切りギリギリに…なんてことも。早めのスタートを！",
+      item: "ふわふわのクッション", color: "ミントグリーン", match: "heart",
+    },
+    cool: {
+      name: "しっかり者タイプ", emoji: "🧊", c: "#1b8fd9", bg: "#eaf6ff",
+      catch: "たよれる！冷静でかしこい作戦係",
+      desc: "物事を落ち着いて考えられる、しっかり者のあなた。計画を立てるのが得意で、みんなが困ったときに頼りにされる存在です。いざというときの判断力はピカイチ！",
+      good: ["冷静", "計画力", "たよれる"],
+      care: "完璧をめざしすぎて自分にきびしくなりがち。70点でもじゅうぶんえらい！",
+      item: "お気に入りの手帳", color: "そらいろブルー", match: "idea",
+    },
+    mystery: {
+      name: "ミステリアスタイプ", emoji: "🔮", c: "#7646e0", bg: "#f3edff",
+      catch: "ふしぎな魅力をまとった、ひみつ多めの人",
+      desc: "多くを語らないけれど、するどい観察力と独特の世界観を持っているあなた。「もっと知りたい！」と思わせるふしぎな魅力があります。ひとりの時間で、こっそりパワーをためるタイプです。",
+      good: ["観察力", "独特のセンス", "ひみつ主義"],
+      care: "気持ちを言わないと伝わらないことも。たまには本音をちょっとだけ見せてみて！",
+      item: "星モチーフのアクセ", color: "よぞらパープル", match: "mystery",
+    },
+  };
+  const TYPE_ORDER = ["heart", "mood", "idea", "mypace", "cool", "mystery"];
+
+  // ===== 質問（えらぶと、そのタイプにポイントが入る） =====
+  const QUESTIONS = [
+    { q: "休みの日、何してることが多い？", a: [
+      ["友だちとワイワイ遊ぶ", { mood: 2 }],
+      ["家でのんびりゴロゴロ", { mypace: 2 }],
+      ["新しいことにチャレンジ", { idea: 2 }],
+      ["ひとりで本や動画にどっぷり", { mystery: 1, cool: 1 }],
+    ] },
+    { q: "友だちが落ちこんでいたら？", a: [
+      ["そばにいて話を聞く", { heart: 2 }],
+      ["笑わせて元気づける", { mood: 2 }],
+      ["解決策をいっしょに考える", { cool: 2 }],
+      ["そっとしておく", { mypace: 1, mystery: 1 }],
+    ] },
+    { q: "グループで何かを決めるとき、あなたは？", a: [
+      ["まとめ役になる", { cool: 2 }],
+      ["アイデアをどんどん出す", { idea: 2 }],
+      ["みんなの意見に合わせる", { heart: 1, mypace: 1 }],
+      ["だまって様子を見る", { mystery: 2 }],
+    ] },
+    { q: "好きな色に近いのは？", a: [
+      ["ピンク・赤", { heart: 2 }],
+      ["オレンジ・黄色", { mood: 1, idea: 1 }],
+      ["緑・茶色", { mypace: 2 }],
+      ["青・紫・黒", { cool: 1, mystery: 1 }],
+    ] },
+    { q: "旅行に行くなら？", a: [
+      ["計画をきっちり立てる", { cool: 2 }],
+      ["その場のノリで決める", { mood: 1, idea: 1 }],
+      ["温泉でまったり", { mypace: 2 }],
+      ["だれも知らない秘境へ", { mystery: 2 }],
+    ] },
+    { q: "よく言われる言葉は？", a: [
+      ["「やさしいね」", { heart: 2 }],
+      ["「おもしろいね」", { mood: 2 }],
+      ["「変わってるね」", { idea: 1, mystery: 1 }],
+      ["「落ちついてるね」", { cool: 1, mypace: 1 }],
+    ] },
+    { q: "テストの前の日、あなたは？", a: [
+      ["計画どおりに見直し", { cool: 2 }],
+      ["友だちと教え合う", { heart: 1, mood: 1 }],
+      ["なんとかなる！と寝る", { mypace: 2 }],
+      ["ヤマをはって一発勝負", { idea: 2 }],
+    ] },
+    { q: "魔法がひとつ使えるなら？", a: [
+      ["みんなを笑顔にする魔法", { heart: 1, mood: 1 }],
+      ["時間を止める魔法", { mypace: 2 }],
+      ["なんでも発明できる魔法", { idea: 2 }],
+      ["人の心が読める魔法", { mystery: 2 }],
+    ] },
+    { q: "SNSに投稿するなら？", a: [
+      ["友だちとの写真", { mood: 2 }],
+      ["かわいい・おいしいもの", { heart: 2 }],
+      ["役立つ情報やまとめ", { cool: 2 }],
+      ["ほとんど見る専", { mystery: 1, mypace: 1 }],
+    ] },
+    { q: "理想の自分は？", a: [
+      ["だれからも好かれる人", { heart: 2 }],
+      ["世界をおどろかせる人", { idea: 2 }],
+      ["なんでもできる完璧な人", { cool: 2 }],
+      ["自由気ままに生きる人", { mypace: 1, mystery: 1 }],
+    ] },
+  ];
+
+  // ===== 画面の切り替え =====
+  const screens = ["startScreen", "quizScreen", "loadingScreen", "resultScreen"].map(id => document.getElementById(id));
+  function show(id) {
+    screens.forEach(s => s.classList.toggle("show", s.id === id));
+    scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // スタート画面に6タイプを並べる
+  document.getElementById("typeChips").innerHTML = TYPE_ORDER.map(k => {
+    const t = TYPES[k];
+    return `<span style="--c:${t.c};--bg:${t.bg}">${t.emoji} ${t.name.replace("タイプ", "")}</span>`;
+  }).join("");
+
+  // ===== 質問の進行 =====
+  let answers = []; // 何番目をえらんだか
+  let current = 0;
+  let locked = false; // 選んだあとの演出中は連打させない
+
+  function renderQuestion() {
+    const item = QUESTIONS[current];
+    document.getElementById("qNum").textContent = "Q" + (current + 1);
+    document.getElementById("qText").textContent = item.q;
+    document.getElementById("progressText").textContent = current + 1 + "/" + QUESTIONS.length;
+    document.getElementById("progressFill").style.width = (current / QUESTIONS.length) * 100 + "%";
+    document.getElementById("backBtn").disabled = current === 0;
+
+    const box = document.getElementById("choices");
+    box.innerHTML = "";
+    item.a.forEach(([label], i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "choice";
+      b.style.animationDelay = i * 0.06 + "s";
+      b.innerHTML = `<span class="mark">${"ABCD"[i]}</span><span></span>`;
+      b.lastChild.textContent = label;
+      b.addEventListener("click", () => pick(i, b));
+      box.appendChild(b);
+    });
+
+    // パネルをもう一度ポンと出す
+    const panel = document.getElementById("questionPanel");
+    panel.style.animation = "none";
+    panel.offsetHeight;
+    panel.style.animation = "pop 0.4s cubic-bezier(.3,1.5,.5,1) both";
+    locked = false;
+  }
+
+  function pick(i, btn) {
+    if (locked) return;
+    locked = true;
+    btn.classList.add("picked");
+    // 進むほど少しずつ音が高くなる
+    Sound.se("click", { volume: 0.7, rate: 1 + current * 0.05 });
+    answers[current] = i;
+    setTimeout(() => {
+      current++;
+      if (current < QUESTIONS.length) renderQuestion();
+      else finish();
+    }, 260);
+  }
+
+  document.getElementById("backBtn").addEventListener("click", () => {
+    if (current === 0 || locked) return;
+    current--;
+    answers.length = current;
+    Sound.se("close", { volume: 0.6 });
+    renderQuestion();
+  });
+
+  document.getElementById("startBtn").addEventListener("click", () => {
+    Sound.se("open", { volume: 0.8 });
+    answers = [];
+    current = 0;
+    show("quizScreen");
+    renderQuestion();
+  });
+
+  document.getElementById("retryBtn").addEventListener("click", () => {
+    Sound.se("click", { volume: 0.7 });
+    show("startScreen");
+  });
+
+  // ===== 集計して結果へ =====
+  function calcScores() {
+    const score = Object.fromEntries(TYPE_ORDER.map(k => [k, 0]));
+    const lastHit = Object.fromEntries(TYPE_ORDER.map(k => [k, -1])); // 同点のときは後半でえらばれた方を優先
+    answers.forEach((choice, qi) => {
+      for (const [k, v] of Object.entries(QUESTIONS[qi].a[choice][1])) {
+        score[k] += v;
+        lastHit[k] = qi;
+      }
+    });
+    const top = [...TYPE_ORDER].sort((a, b) => score[b] - score[a] || lastHit[b] - lastHit[a])[0];
+    return { score, top };
+  }
+
+  function finish() {
+    document.getElementById("progressFill").style.width = "100%";
+    show("loadingScreen");
+    // 診断中はルーレットっぽく音を刻む
+    let n = 0;
+    const timer = setInterval(() => Sound.se("tick", { volume: 0.35, rate: 1 + (n++ % 4) * 0.12 }), 220);
+    setTimeout(() => {
+      clearInterval(timer);
+      showResult();
+    }, 1700);
+  }
+
+  function showResult() {
+    const { score, top } = calcScores();
+    const t = TYPES[top];
+    const panel = document.getElementById("resultPanel");
+    panel.style.setProperty("--c", t.c);
+    panel.style.setProperty("--bg", t.bg);
+    panel.style.boxShadow = `0 8px 0 ${t.c}55, 0 16px 40px rgba(155, 107, 255, 0.18)`; // タイプの色で影をつける
+
+    document.getElementById("rIco").textContent = t.emoji;
+    document.getElementById("rName").textContent = t.name;
+    document.getElementById("rCatch").textContent = t.catch;
+    document.getElementById("rDesc").textContent = t.desc;
+    document.getElementById("rGood").innerHTML = t.good.map(g => `<span>${g}</span>`).join("");
+    document.getElementById("rCare").textContent = t.care;
+    document.getElementById("rItem").textContent = t.item;
+    document.getElementById("rColor").textContent = t.color;
+    const m = TYPES[t.match];
+    document.getElementById("rMatch").textContent =
+      m === t ? `${m.emoji} ${m.name}（同じタイプどうし、言わなくても通じ合える！）` : `${m.emoji} ${m.name}`;
+
+    // わりあいのバー（一番多いタイプを100%として表示）
+    const total = Object.values(score).reduce((a, b) => a + b, 0) || 1;
+    const max = Math.max(...Object.values(score)) || 1;
+    const rows = document.getElementById("rScores");
+    rows.innerHTML = TYPE_ORDER.map(k => {
+      const tt = TYPES[k];
+      return `<div class="score-row" style="--c:${tt.c}">
+        <span>${tt.emoji} ${tt.name.replace("タイプ", "")}</span>
+        <div class="score-bar"><i data-w="${(score[k] / max) * 100}"></i></div>
+        <b>${Math.round((score[k] / total) * 100)}%</b>
+      </div>`;
+    }).join("");
+
+    show("resultScreen");
+    Sound.se("accent", { volume: 0.9 });
+    // 表示されてからバーをのばす
+    requestAnimationFrame(() => requestAnimationFrame(() =>
+      rows.querySelectorAll("i").forEach(i => (i.style.width = i.dataset.w + "%"))
+    ));
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>タロット占い | UraNai+（うらないプラス）</title>
+<meta name="description" content="22枚のタロットカードから、あなたへのメッセージをひいてみよう！1枚引きと3枚引き（過去・現在・未来）がえらべるよ。">
+<!-- OGP（SNS で URL を貼ったときに出るカード）。画像は tools/make-ogp.ps1 で作る -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="UraNai+（うらないプラス）">
+<meta property="og:title" content="タロット占い | UraNai+（うらないプラス）">
+<meta property="og:description" content="22枚のタロットカードから、あなたへのメッセージをひいてみよう！1枚引きと3枚引き（過去・現在・未来）がえらべるよ。">
+<meta property="og:url" content="https://kaikomziu.github.io/uranai-plus/list/p9e88lj/">
+<meta property="og:image" content="https://kaikomziu.github.io/uranai-plus/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="UraNai+ うらないプラス">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=M+PLUS+Rounded+1c:wght@500;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../common.css">
+<link rel="stylesheet" href="../fortune.css">
+<style>
+  /* タロットは紫〜紺の夜っぽい色 */
+  .panel { box-shadow: 0 8px 0 #d6c6ff, 0 16px 40px rgba(118, 70, 224, 0.2); }
+  .title { color: #7646e0; }
+
+  .modes { display: grid; gap: 10px; margin-top: 18px; }
+  .mode {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 2px solid #efe8ff;
+    border-radius: 18px;
+    background: #fff;
+    color: #4a3d6b;
+    font-family: inherit;
+    font-weight: 800;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #ece4ff;
+    transition: transform 0.12s;
+  }
+  .mode:hover { transform: translateY(-2px); border-color: #c9b5ff; }
+  .mode .ico { font-size: 30px; }
+  .mode b { display: block; font-size: 16px; color: #7646e0; }
+  .mode small { font-size: 12px; font-weight: 500; color: #7a6e98; }
+
+  /* ===== カードをえらぶ ===== */
+  .pick-lead { font-size: 16px; color: #7646e0; }
+  .pick-count { margin-top: 4px; font-family: "Fredoka", sans-serif; color: #9b8bc4; }
+
+  .deck {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+
+  .back-card {
+    aspect-ratio: 2 / 3;
+    border: 3px solid #fff;
+    border-radius: 12px;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.35) 0 18%, transparent 19%),
+      repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.12) 0 6px, transparent 6px 12px),
+      linear-gradient(135deg, #7646e0, #3b2a8a);
+    box-shadow: 0 4px 0 #c9b5ff;
+    cursor: pointer;
+    transition: transform 0.18s, box-shadow 0.18s, opacity 0.2s;
+    animation: dealIn 0.4s cubic-bezier(.3,1.4,.5,1) both;
+    position: relative;
+    color: #fff;
+    font-family: "Fredoka", sans-serif;
+    font-size: 18px;
+  }
+  .back-card::after { content: "✦"; position: absolute; inset: 0; display: grid; place-items: center; font-size: 20px; color: rgba(255, 255, 255, 0.8); }
+  .back-card:hover { transform: translateY(-5px) rotate(-2deg); }
+  .back-card.chosen { transform: translateY(-10px) scale(1.05); box-shadow: 0 0 0 4px #ffcf3f, 0 8px 0 #c9b5ff; }
+  .back-card.chosen::after { content: attr(data-n); font-size: 24px; color: #ffcf3f; }
+  .deck.done .back-card:not(.chosen) { opacity: 0.35; pointer-events: none; }
+
+  /* ===== 結果のカード ===== */
+  .spread { display: grid; gap: 16px; margin-top: 6px; }
+
+  .slot { text-align: left; }
+  .slot-pos {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 999px;
+    background: #f3edff;
+    color: #7646e0;
+    font-size: 13px;
+  }
+
+  .slot-row { display: flex; gap: 14px; align-items: flex-start; margin-top: 8px; }
+
+  /* 裏から表へくるっとめくる */
+  .flip { flex: none; width: 96px; aspect-ratio: 2 / 3; perspective: 600px; }
+  .flip-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.7s cubic-bezier(.3,1.3,.5,1); }
+  .flip.open .flip-inner { transform: rotateY(180deg); }
+  .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px; }
+  .face.back-card:hover { transform: none; } /* めくるカードの裏面はホバーで動かさない */
+  .face.front {
+    transform: rotateY(180deg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 4px;
+    border: 3px solid #ffe08a;
+    background: linear-gradient(160deg, #fffdf5, #fff0fb);
+    box-shadow: 0 4px 0 #e8d9ff;
+  }
+  .front .num { font-family: "Fredoka", sans-serif; font-size: 12px; color: #b69bff; }
+  .front .emo { font-size: 40px; line-height: 1; }
+  .front .nm { font-size: 11px; color: #7646e0; text-align: center; line-height: 1.2; }
+  .front.rev .emo { transform: rotate(180deg); }
+
+  .slot-text { flex: 1; min-width: 0; opacity: 0; transform: translateY(6px); transition: opacity 0.4s, transform 0.4s; }
+  .slot.open .slot-text { opacity: 1; transform: none; }
+  .slot-name { font-size: 17px; color: #4a3d6b; }
+  .slot-name small { margin-left: 6px; padding: 1px 8px; border-radius: 999px; font-size: 11px; background: #fff3d6; color: #d99a00; }
+  .slot-name small.rev { background: #eef0ff; color: #5a6ad9; }
+  .slot-key { margin-top: 2px; font-size: 13px; color: #ff5fa2; }
+  .slot-msg { margin-top: 4px; font-size: 13px; font-weight: 500; line-height: 1.8; }
+
+  @keyframes dealIn {
+    from { opacity: 0; transform: translateY(-30px) rotate(-20deg) scale(0.6); }
+  }
+
+  @media (max-width: 420px) {
+    .flip { width: 80px; }
+    .front .emo { font-size: 34px; }
+  }
+</style>
+</head>
+<body>
+  <span class="deco" style="--x:6%;--y:22%;--s:30px;--d:5s;--delay:0s">🌙</span>
+  <span class="deco" style="--x:88%;--y:74%;--s:34px;--d:6s;--delay:-2s">🃏</span>
+  <span class="deco" style="--x:5%;--y:78%;--s:26px;--d:4.6s;--delay:-1s">✨</span>
+
+  <main class="page">
+    <section class="screen show" id="introScreen">
+      <div class="panel">
+        <div class="big-ico">🃏</div>
+        <h1 class="title">タロット占い</h1>
+        <p class="lead">心を落ちつけて、知りたいことを思いうかべてね。<br>引き方をえらぼう！</p>
+        <div class="modes">
+          <button class="mode" type="button" data-mode="1"><span class="ico">🌟</span><span><b>1枚引き</b><small>今日のあなたへのメッセージ</small></span></button>
+          <button class="mode" type="button" data-mode="3"><span class="ico">🔮</span><span><b>3枚引き</b><small>過去・現在・未来の流れを見る</small></span></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="pickScreen">
+      <div class="panel">
+        <p class="pick-lead" id="pickLead"></p>
+        <p class="pick-count" id="pickCount"></p>
+        <div class="deck" id="deck"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="resultScreen">
+      <div class="panel">
+        <h2 class="title" style="font-size:24px">🃏 あなたのカード</h2>
+        <div class="spread" id="spread"></div>
+        <div class="info" id="summaryBox" hidden>
+          <div class="info-box wide"><h3>🔮 カードからのメッセージ</h3><p id="summary"></p></div>
+        </div>
+        <div class="share-row" id="shareRow"></div>
+        <div class="actions">
+          <button class="btn" id="againBtn" type="button">🃏 もう一回ひく</button>
+          <a class="btn sub" href="../">🔮 占い一覧へ</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script src="../../audio.js"></script>
+<script src="../../common.js"></script>
+<script src="../fortune.js"></script>
+<script>
+  const show = Fortune.screens(["introScreen", "pickScreen", "resultScreen"]);
+
+  // ===== 大アルカナ22枚（キーワードと、正位置・逆位置のメッセージ） =====
+  const CARDS = [
+    ["0", "愚者", "🎒", "自由・はじまり", "新しい冒険のはじまり！ 先のことを考えすぎず、わくわくする気持ちのままに一歩ふみだしてみて。", "勢いだけで動くと空回りしそう。出発の前に、持ち物と予定をもう一度チェック！"],
+    ["I", "魔術師", "🪄", "才能・スタート", "あなたの中には、まだ使っていない力がたくさん。思いついたことを形にするチャンスです。", "準備が足りていないかも。できることからひとつずつ、手を動かしてみよう。"],
+    ["II", "女教皇", "📖", "直感・ひらめき", "答えはもうあなたの心の中に。静かな時間をつくると、ひらめきがやってきます。", "考えすぎて動けなくなっているかも。頭で考えるより、気持ちを声に出してみて。"],
+    ["III", "女帝", "🌸", "ゆたかさ・愛", "愛情とゆたかさに包まれる時。自分をたっぷりかわいがってあげると、運気がさらにアップ。", "がんばりすぎてつかれていない？ たまには甘えたり、休んだりしてOK。"],
+    ["IV", "皇帝", "👑", "リーダー・安定", "しっかり者のあなたが輝く時。自信をもって、みんなを引っぱってみて！", "ちょっと意地をはりすぎかも。まわりの意見にも耳をかたむけると、うまくいくよ。"],
+    ["V", "教皇", "🔔", "信頼・教え", "信頼できる人のアドバイスが道しるべに。先輩や先生に相談してみるといいかも。", "決まりにしばられすぎているかも。自分らしいやり方も大切にしてね。"],
+    ["VI", "恋人", "💞", "選択・ときめき", "心がときめく出会いや選択のとき。好きなものを素直にえらぶと、幸せがやってきます。", "迷いがちな時。だれかに合わせるより、自分の「好き」を大切にしてみて。"],
+    ["VII", "戦車", "🏇", "前進・勝利", "やる気がみなぎる時！ ゴールに向かって全速力で進めば、勝利はすぐそこ。", "あせって突っ走りがち。いちど立ち止まって、方向をたしかめよう。"],
+    ["VIII", "力", "🦁", "勇気・やさしさ", "やさしさこそ本当の強さ。あなたの思いやりが、むずかしい状況をやわらかく変えていきます。", "自信をなくしているかも。あなたはもう、じゅうぶんがんばっているよ。"],
+    ["IX", "隠者", "🏮", "ひとり時間・探求", "ひとりの時間に、大切な気づきがありそう。自分の気持ちとゆっくり向き合ってみて。", "ひとりでかかえこみすぎているかも。だれかに話すと、心が軽くなるよ。"],
+    ["X", "運命の輪", "🎡", "チャンス・転機", "運命の輪がまわりはじめた！ うれしい変化やチャンスがやってくる予感。", "流れがちょっと止まり気味。あせらず待てば、また風向きはかわるよ。"],
+    ["XI", "正義", "⚖️", "バランス・公平", "正直でまっすぐな気持ちが、いい結果につながります。バランスを大切にね。", "どっちつかずになっているかも。自分の気持ちに正直になってみて。"],
+    ["XII", "吊るされた男", "🙃", "見方をかえる", "いつもとちがう角度から見ると、新しい答えが見つかりそう。待つことも大切な時。", "がまんしすぎていない？ ときには「いやだ」と言ってもだいじょうぶ。"],
+    ["XIII", "死神", "🦋", "おわりと再スタート", "ひとつの区切りがきて、新しい自分に生まれかわる時。手放すことで、もっといいものが入ってきます。", "変わるのがこわくて、しがみついているかも。少しずつでいいから、前を向いてみよう。"],
+    ["XIV", "節制", "🍹", "調和・ちょうどいい", "ちょうどいいバランスがとれている時。まわりの人とも、自然に仲良くなれそう。", "やりすぎ・がんばりすぎに注意。ほどほどを意識すると、うまくいくよ。"],
+    ["XV", "悪魔", "😈", "誘惑・こだわり", "やめられない何かに気をとられているかも。ゲームやおやつは、ほどほどにね。", "しばられていたものから自由になれる時！ 新しい自分を楽しんで。"],
+    ["XVI", "塔", "⚡", "びっくり・変化", "思いがけないできごとがあるかも。でも、それは古いものを壊して新しくするチャンス！", "大きなトラブルは回避できそう。早めの準備で、ピンチもへっちゃら。"],
+    ["XVII", "星", "⭐", "希望・ねがい", "希望の星があなたを照らしています。ずっと願っていたことが、かないはじめるかも。", "ちょっと自信をなくし気味。夜空を見上げて、自分のいいところを思い出してみて。"],
+    ["XVIII", "月", "🌙", "ゆらぎ・ふしぎ", "なんとなく不安な気持ちになりやすい時。はっきりしないことは、あせって決めないでね。", "モヤモヤが晴れていく時！ ほんとうのことが見えてきて、すっきりしそう。"],
+    ["XIX", "太陽", "☀️", "成功・よろこび", "最高にハッピーなカード！ 明るい気持ちでいれば、なにもかもうまくいきそう。", "元気がちょっとお休み中。でも太陽はまたのぼるよ。ゆっくり充電しよう。"],
+    ["XX", "審判", "📯", "復活・目覚め", "あきらめかけていたことが、もう一度うごきだす予感。いまこそ再チャレンジの時！", "過去のことを気にしすぎているかも。もう前に進んでもだいじょうぶ。"],
+    ["XXI", "世界", "🌍", "完成・ハッピーエンド", "がんばってきたことが実をむすぶ、うれしい完成のとき。自分にごほうびをあげよう！", "あと少しで完成！ 最後の仕上げまで気をぬかないでね。"],
+  ];
+
+  const POSITIONS = { 1: ["今日のメッセージ"], 3: ["過去", "現在", "未来"] };
+  const DECK_SIZE = 10; // 並べる裏向きカードの枚数
+
+  let mode = 1;
+  let chosen = []; // えらんだ裏向きカードの番号
+  let drawn = [];  // 実際に出たカード { card, rev }
+
+  document.querySelectorAll(".mode").forEach(b =>
+    b.addEventListener("click", () => {
+      mode = Number(b.dataset.mode);
+      Sound.se("open", { volume: 0.8 });
+      startPick();
+    })
+  );
+
+  function startPick() {
+    chosen = [];
+    // 22枚をシャッフルして、上から順にえらばれたカードとして使う
+    const order = CARDS.map((_, i) => i).sort(() => Math.random() - 0.5);
+    drawn = order.slice(0, mode).map(i => ({ card: CARDS[i], rev: Math.random() < 0.3 }));
+
+    document.getElementById("pickLead").textContent = `気になるカードを${mode}枚えらんでね`;
+    updateCount();
+    const deck = document.getElementById("deck");
+    deck.className = "deck";
+    deck.innerHTML = "";
+    for (let i = 0; i < DECK_SIZE; i++) {
+      const c = document.createElement("button");
+      c.type = "button";
+      c.className = "back-card";
+      c.setAttribute("aria-label", "カード" + (i + 1));
+      c.style.animationDelay = i * 0.05 + "s";
+      c.addEventListener("click", () => choose(c));
+      deck.appendChild(c);
+    }
+    // カードを配る音
+    for (let i = 0; i < 5; i++) setTimeout(() => Sound.se("tick", { volume: 0.3, rate: 1.2 + i * 0.05 }), i * 90);
+    show("pickScreen");
+  }
+
+  function updateCount() {
+    document.getElementById("pickCount").textContent = chosen.length + " / " + mode;
+  }
+
+  function choose(card) {
+    if (card.classList.contains("chosen") || chosen.length >= mode) return;
+    chosen.push(card);
+    card.classList.add("chosen");
+    card.dataset.n = chosen.length;
+    Sound.se("click", { volume: 0.7, rate: 1 + chosen.length * 0.1 });
+    updateCount();
+    if (chosen.length === mode) {
+      document.getElementById("deck").classList.add("done");
+      setTimeout(showResult, 700);
+    }
+  }
+
+  function showResult() {
+    const spread = document.getElementById("spread");
+    spread.innerHTML = "";
+    drawn.forEach((d, i) => {
+      const [num, name, emo, key, up, down] = d.card;
+      const slot = document.createElement("div");
+      slot.className = "slot";
+      slot.innerHTML = `
+        <span class="slot-pos"></span>
+        <div class="slot-row">
+          <div class="flip"><div class="flip-inner">
+            <div class="face back back-card" style="animation:none"></div>
+            <div class="face front ${d.rev ? "rev" : ""}"><span class="num">${num}</span><span class="emo">${emo}</span><span class="nm"></span></div>
+          </div></div>
+          <div class="slot-text">
+            <div class="slot-name"><span></span><small class="${d.rev ? "rev" : ""}">${d.rev ? "逆位置" : "正位置"}</small></div>
+            <div class="slot-key"></div>
+            <p class="slot-msg"></p>
+          </div>
+        </div>`;
+      slot.querySelector(".slot-pos").textContent = POSITIONS[mode][i];
+      slot.querySelector(".nm").textContent = name;
+      slot.querySelector(".slot-name span").textContent = name;
+      slot.querySelector(".slot-key").textContent = "🔑 " + key;
+      slot.querySelector(".slot-msg").textContent = d.rev ? down : up;
+      spread.appendChild(slot);
+
+      // 1枚ずつ順番にめくる
+      setTimeout(() => {
+        slot.querySelector(".flip").classList.add("open");
+        slot.classList.add("open");
+        Sound.se(i === drawn.length - 1 ? "accent" : "open", { volume: 0.8 });
+      }, 600 + i * 900);
+    });
+
+    // 3枚引きのときは全体のまとめ
+    const box = document.getElementById("summaryBox");
+    if (mode === 3) {
+      const good = drawn.filter(d => !d.rev).length;
+      const msgs = [
+        "いまは立ち止まって、心と体を休める時期。無理に動かなくても、流れは少しずつ良くなっていくよ。",
+        "ちょっとむずかしい時期だけど、ひとつずつ向き合えばだいじょうぶ。未来のカードをヒントにしてね。",
+        "全体としては、いい流れに乗っています。気になるカードのアドバイスを意識してみて。",
+        "とってもいい流れ！ 過去の経験が今を支えて、明るい未来へつながっています。",
+      ];
+      document.getElementById("summary").textContent = msgs[good];
+      box.hidden = false;
+    } else {
+      box.hidden = true;
+    }
+
+    const names = drawn.map(d => d.card[1] + (d.rev ? "（逆）" : "")).join("・");
+    Fortune.shareText(document.getElementById("shareRow"), `🃏 タロット占いで「${names}」のカードが出たよ！`);
+    show("resultScreen");
+  }
+
+  document.getElementById("againBtn").addEventListener("click", () => {
+    Sound.se("click", { volume: 0.7 });
+    show("introScreen");
+  });
+</script>
+</body>
+</html>

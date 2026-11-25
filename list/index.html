@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>占い一覧 | UraNai+（うらないプラス）</title>
+<meta name="description" content="UraNai+ の占い一覧。気になる占いをえらんでね！">
+<!-- OGP（SNS で URL を貼ったときに出るカード）。画像は tools/make-ogp.ps1 で作る -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="UraNai+（うらないプラス）">
+<meta property="og:title" content="占い一覧 | UraNai+（うらないプラス）">
+<meta property="og:description" content="UraNai+ の占い一覧。気になる占いをえらんでね！">
+<meta property="og:url" content="https://kaikomziu.github.io/uranai-plus/list/">
+<meta property="og:image" content="https://kaikomziu.github.io/uranai-plus/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="UraNai+ うらないプラス">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=M+PLUS+Rounded+1c:wght@500;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../common.css">
+<style>
+  .page {
+    position: relative;
+    z-index: 1;
+    width: min(720px, 100%);
+    margin: 0 auto;
+    padding: 96px 16px 110px; /* 上はプレイヤー、下はタスクバーのぶん空ける */
+  }
+
+  .page-title {
+    text-align: center;
+    font-size: clamp(28px, 6vw, 40px);
+    color: #7646e0;
+    -webkit-text-stroke: 0.12em #fff;
+    paint-order: stroke fill;
+    text-shadow: 0 4px 0 rgba(118, 70, 224, 0.25);
+    animation: pop 0.6s cubic-bezier(.3,1.6,.5,1) both;
+  }
+
+  .page-lead {
+    margin-top: 8px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: #7a6e98;
+    animation: pop 0.6s cubic-bezier(.3,1.6,.5,1) 0.1s both;
+  }
+
+  .grid {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+    gap: 18px;
+  }
+
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px;
+    border-radius: 24px;
+    background: #fff;
+    border: 3px solid #fff;
+    box-shadow: 0 6px 0 var(--sh, #ffc4de), 0 12px 30px rgba(155, 107, 255, 0.15);
+    color: inherit;
+    text-decoration: none;
+    animation: pop 0.6s cubic-bezier(.3,1.6,.5,1) both;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .card:hover { transform: translateY(-3px) rotate(-0.5deg); }
+  .card:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--sh, #ffc4de); }
+
+  .card-ico {
+    width: 60px;
+    height: 60px;
+    display: grid;
+    place-items: center;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #ffd6ec, #e3d9ff);
+    font-size: 32px;
+  }
+
+  .card-title { font-size: 20px; color: var(--c, #ff5fa2); }
+
+  /* ひとりで／ふたりで のバッジ */
+  .badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #f3edff;
+    color: #7646e0;
+    font-size: 12px;
+  }
+  .badge.share { background: #fff0f5; color: #ff4f8b; }
+  .card-desc { font-size: 13px; font-weight: 500; color: #7a6e98; line-height: 1.6; }
+
+  .card-go {
+    align-self: flex-end;
+    margin-top: 4px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ff8cc0, #b69bff);
+    color: #fff;
+    font-size: 13px;
+  }
+
+  /* まだ無い占いの「準備中」カード */
+  .card.soon {
+    background: rgba(255, 255, 255, 0.5);
+    border-style: dashed;
+    border-color: rgba(255, 255, 255, 0.9);
+    box-shadow: none;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #9b8bc4;
+    min-height: 180px;
+  }
+
+  .card.soon:hover { transform: none; }
+</style>
+</head>
+<body>
+  <span class="deco" style="--x:6%;--y:20%;--s:30px;--d:5s;--delay:0s">⭐</span>
+  <span class="deco" style="--x:88%;--y:78%;--s:34px;--d:6s;--delay:-2s">🔮</span>
+  <span class="deco" style="--x:4%;--y:80%;--s:26px;--d:4.6s;--delay:-1s">✨</span>
+
+  <main class="page">
+    <h1 class="page-title">🔮 占い一覧</h1>
+    <p class="page-lead">気になる占いをえらんでね！</p>
+    <div class="grid" id="grid"></div>
+  </main>
+
+<script src="../audio.js"></script>
+<script src="../common.js"></script>
+<script>
+  // ===== FORTUNES（common.js）からカードを並べる =====
+  const grid = document.getElementById("grid");
+  FORTUNES.forEach((f, i) => {
+    const a = document.createElement("a");
+    a.className = "card";
+    a.href = fortuneUrl(f);
+    a.style.setProperty("--c", f.color);
+    a.style.animationDelay = 0.15 + i * 0.08 + "s";
+    a.innerHTML = `
+      <span class="badge ${f.share ? "share" : ""}">${f.share ? "👥 ふたりで" : "🙋 ひとりで"}</span>
+      <span class="card-ico"></span>
+      <span class="card-title"></span>
+      <span class="card-desc"></span>
+      <span class="card-go">はじめる ▶</span>`;
+    a.querySelector(".card-ico").textContent = f.emoji;
+    a.querySelector(".card-title").textContent = f.title;
+    a.querySelector(".card-desc").textContent = f.desc;
+    a.addEventListener("pointerdown", () => Sound.se("click", { volume: 0.7 }));
+    grid.appendChild(a);
+  });
+
+  // まだ増える予定であることを示すカード
+  const soon = document.createElement("div");
+  soon.className = "card soon";
+  soon.style.animationDelay = 0.15 + FORTUNES.length * 0.08 + "s";
+  soon.innerHTML = '<span style="font-size:30px">🌱</span><span>新しい占い、準備中…</span>';
+  grid.appendChild(soon);
+</script>
+</body>
+</html>

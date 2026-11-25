@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>恋愛相性占い | UraNai+（うらないプラス）</title>
+<meta name="description" content="あなたがこたえてURLを送ると、相手もこたえて、ふたりの恋愛相性がわかるよ！">
+<!-- OGP（SNS で URL を貼ったときに出るカード）。画像は tools/make-ogp.ps1 で作る -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="UraNai+（うらないプラス）">
+<meta property="og:title" content="恋愛相性占い | UraNai+（うらないプラス）">
+<meta property="og:description" content="あなたがこたえてURLを送ると、相手もこたえて、ふたりの恋愛相性がわかるよ！">
+<meta property="og:url" content="https://kaikomziu.github.io/uranai-plus/list/5v8zmrv/">
+<meta property="og:image" content="https://kaikomziu.github.io/uranai-plus/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="UraNai+ うらないプラス">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=M+PLUS+Rounded+1c:wght@500;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../common.css">
+<link rel="stylesheet" href="../fortune.css">
+<style>
+  /* 恋愛占いはピンク〜赤系でまとめる */
+  .panel { box-shadow: 0 8px 0 #ffb3cf, 0 16px 40px rgba(255, 95, 162, 0.2); }
+  .title { color: #ff4f8b; }
+
+  /* 届いた招待の吹き出し */
+  .invite {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 10px 16px;
+    border-radius: 18px;
+    background: #fff0f5;
+    color: #ff4f8b;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .invite b { font-size: 19px; }
+  .invite[hidden] { display: none; }
+
+  /* 名前の入力 */
+  .name-label { display: block; margin-top: 16px; font-size: 14px; color: #7a6e98; }
+
+  .name-input {
+    display: block;
+    width: min(320px, 100%);
+    margin: 10px auto 0;
+    padding: 13px 16px;
+    border: 3px solid #ffd6e6;
+    border-radius: 18px;
+    background: #fffafc;
+    color: #4a3d6b;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 18px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .name-input:focus { border-color: #ff8cc0; box-shadow: 0 0 0 4px rgba(255, 140, 192, 0.2); }
+  .name-hint { margin-top: 6px; font-size: 12px; font-weight: 500; color: #b0a6c8; }
+  .name-error { margin-top: 6px; min-height: 1.2em; font-size: 13px; color: #e0457b; }
+
+  /* URL ができたよ画面 */
+  .url-box {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .url-input {
+    flex: 1;
+    min-width: 0;
+    padding: 11px 12px;
+    border: 2px solid #efe8ff;
+    border-radius: 14px;
+    background: #faf7ff;
+    color: #7a6e98;
+    font-family: "Fredoka", monospace;
+    font-size: 13px;
+  }
+
+  .copy-btn {
+    flex: none;
+    padding: 0 16px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ff8cc0, #ff5f8f);
+    color: #fff;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #ffb3cf;
+  }
+
+  .copy-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #ffb3cf; }
+
+  .share-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    border: none;
+    border-radius: 999px;
+    color: #fff;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .share-btn.line { background: #06c755; }
+  .share-btn.x { background: #222; }
+  .share-btn.native { background: #9b6bff; }
+
+  .note {
+    margin-top: 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #9b8bc4;
+    line-height: 1.7;
+  }
+
+  /* ===== 結果 ===== */
+  .couple {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: clamp(17px, 4.6vw, 22px);
+    color: #4a3d6b;
+    flex-wrap: wrap;
+  }
+
+  .couple .heart { font-size: 1.4em; animation: beat 0.9s ease-in-out infinite; }
+
+  .meter {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 14px auto 0;
+  }
+
+  .meter svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .meter .track { fill: none; stroke: #ffe3ee; stroke-width: 14; }
+  .meter .fill {
+    fill: none;
+    stroke: url(#loveGrad);
+    stroke-width: 14;
+    stroke-linecap: round;
+    stroke-dasharray: 402;
+    stroke-dashoffset: 402;
+    transition: stroke-dashoffset 1.6s cubic-bezier(.3,1,.4,1);
+  }
+
+  .meter .pct {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-family: "Fredoka", sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: #ff4f8b;
+  }
+
+  .meter .pct small { font-size: 20px; }
+
+  .tier {
+    margin-top: 10px;
+    font-size: clamp(22px, 5.6vw, 28px);
+    color: #ff4f8b;
+  }
+
+  .tier-msg {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.9;
+    text-align: left;
+  }
+
+  .cats { margin-top: 16px; display: grid; grid-template-columns: max-content 1fr 2.8em; gap: 8px; align-items: center; font-size: 13px; text-align: left; white-space: nowrap; }
+  .cat-bar { height: 10px; border-radius: 999px; background: #ffeef4; overflow: hidden; }
+  .cat-bar i { display: block; height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, #ff8cc0, #ff4f8b); transition: width 1s cubic-bezier(.3,1.3,.5,1); }
+  .cats b { font-family: "Fredoka", sans-serif; color: #ff7aa8; text-align: right; }
+
+  .err-ico { font-size: 56px; }
+
+  @keyframes beat {
+    0%, 100% { transform: scale(1); }
+    30% { transform: scale(1.25); }
+    60% { transform: scale(0.95); }
+  }
+</style>
+</head>
+<body>
+  <span class="deco" style="--x:6%;--y:22%;--s:30px;--d:5s;--delay:0s">💗</span>
+  <span class="deco" style="--x:88%;--y:74%;--s:34px;--d:6s;--delay:-2s">💌</span>
+  <span class="deco" style="--x:5%;--y:78%;--s:26px;--d:4.6s;--delay:-1s">✨</span>
+
+  <main class="page">
+    <!-- スタート（自分から始めるとき／届いたURLを開いたとき） -->
+    <section class="screen" id="introScreen">
+      <div class="panel">
+        <div class="big-ico">💘</div>
+        <h1 class="title">恋愛相性占い</h1>
+        <p class="invite" id="inviteMsg" hidden></p>
+        <p class="lead" id="introLead"></p>
+        <button class="btn" id="introBtn" type="button">はじめる ▶</button>
+      </div>
+    </section>
+
+    <!-- 名前 -->
+    <section class="screen" id="nameScreen">
+      <div class="panel">
+        <div class="big-ico">✏️</div>
+        <h2 class="title">あなたの名前は？</h2>
+        <label class="name-label" for="nameInput">ニックネームでもOK（12文字まで）</label>
+        <input class="name-input" id="nameInput" type="text" maxlength="12" autocomplete="nickname" placeholder="なまえ">
+        <p class="name-error" id="nameError"></p>
+        <button class="btn" id="nameBtn" type="button">つぎへ ▶</button>
+      </div>
+    </section>
+
+    <!-- 質問 -->
+    <section class="screen" id="quizScreen">
+      <div class="progress">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <span id="progressText">1/8</span>
+      </div>
+      <div class="panel" id="questionPanel">
+        <span class="q-num" id="qNum">Q1</span>
+        <p class="q-text" id="qText"></p>
+        <div class="choices" id="choices"></div>
+        <button class="back" id="backBtn" type="button">← ひとつ前にもどる</button>
+      </div>
+    </section>
+
+    <!-- 1人目: 相手に送るURLができた -->
+    <section class="screen" id="linkScreen">
+      <div class="panel">
+        <div class="big-ico">💌</div>
+        <h2 class="title">URLができたよ！</h2>
+        <p class="lead">このURLを、相性を知りたい相手に送ってね。<br>相手がこたえると、ふたりの結果が出るよ！</p>
+        <div class="url-box">
+          <input class="url-input" id="inviteUrl" type="text" readonly aria-label="相手に送るURL">
+          <button class="copy-btn" id="copyInvite" type="button">コピー</button>
+        </div>
+        <div class="share-row" id="inviteShare"></div>
+        <p class="note">※ URLの中に、あなたの名前と答えが入っています。<br>結果は、相手から結果のURLを送ってもらうと見られるよ。</p>
+      </div>
+    </section>
+
+    <!-- 診断中 -->
+    <section class="screen" id="loadingScreen">
+      <div class="panel">
+        <div class="ball">💞</div>
+        <p class="thinking">ふたりの相性をしらべ中<span class="dots"><span>.</span><span>.</span><span>.</span></span></p>
+      </div>
+    </section>
+
+    <!-- 結果 -->
+    <section class="screen" id="resultScreen">
+      <div class="panel">
+        <div class="couple"><span id="rNameA"></span><span class="heart">💗</span><span id="rNameB"></span></div>
+        <div class="meter">
+          <svg viewBox="0 0 150 150" aria-hidden="true">
+            <defs>
+              <linearGradient id="loveGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#ffb3d9"/>
+                <stop offset="1" stop-color="#ff4f8b"/>
+              </linearGradient>
+            </defs>
+            <circle class="track" cx="75" cy="75" r="64"/>
+            <circle class="fill" id="meterFill" cx="75" cy="75" r="64"/>
+          </svg>
+          <div class="pct"><span><span id="rPct">0</span><small>%</small></span></div>
+        </div>
+        <h2 class="tier" id="rTier"></h2>
+        <p class="tier-msg" id="rMsg"></p>
+        <div class="cats" id="rCats"></div>
+        <div class="info">
+          <div class="info-box wide"><h3>💡 ふたりへのアドバイス</h3><p id="rAdvice"></p></div>
+          <div class="info-box wide"><h3>📍 おすすめデートスポット</h3><p id="rSpot"></p></div>
+        </div>
+
+        <!-- 2人目が見ているときだけ: 結果を1人目に送る -->
+        <div id="sendBack" hidden>
+          <p class="note" id="sendBackLead"></p>
+          <div class="url-box">
+            <input class="url-input" id="resultUrl" type="text" readonly aria-label="結果のURL">
+            <button class="copy-btn" id="copyResult" type="button">コピー</button>
+          </div>
+          <div class="share-row" id="resultShare"></div>
+        </div>
+
+        <div class="actions">
+          <a class="btn" id="selfBtn" href="./">💘 自分も誰かと占う</a>
+          <a class="btn sub" href="../">🔮 占い一覧へ</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- URL がこわれているとき -->
+    <section class="screen" id="errorScreen">
+      <div class="panel">
+        <div class="err-ico">💔</div>
+        <h2 class="title">URLが読みこめなかった…</h2>
+        <p class="lead">URLが途中で切れているかもしれません。<br>送ってくれた人に、もう一度URLを送ってもらってね。</p>
+        <a class="btn" href="./">💘 自分から占いをはじめる</a>
+      </div>
+    </section>
+  </main>
+
+<script src="../../audio.js"></script>
+<script src="../../common.js"></script>
+<script>
+  // ===== 質問（自分のことをこたえる） =====
+  // m は「1人目の答え × 2人目の答え」の相性（0〜100）。行が1人目、列が2人目で、左右対称
+  const QUESTIONS = [
+    { q: "好きな人ができたら？", a: ["自分からアタック！", "相手から来るのを待つ", "まず友だちに相談", "こっそり見守る"],
+      m: [[70, 95, 75, 85], [95, 40, 60, 35], [75, 60, 80, 55], [85, 35, 55, 45]] },
+    { q: "デートで行きたいのは？", a: ["遊園地でおもいっきり", "カフェでおしゃべり", "映画や水族館", "おうちでまったり"],
+      m: [[100, 60, 75, 40], [60, 100, 70, 75], [75, 70, 100, 65], [40, 75, 65, 100]] },
+    { q: "好きな人との連絡は？", a: ["毎日たくさんしたい", "1日に数回くらい", "用事があるときだけ", "気が向いたら"],
+      m: [[100, 80, 40, 30], [80, 100, 65, 50], [40, 65, 100, 85], [30, 50, 85, 100]] },
+    { q: "ケンカしちゃったら？", a: ["すぐに話し合う", "時間をおいて冷静に", "自分から先にあやまる", "相手があやまるまで待つ"],
+      m: [[85, 60, 90, 55], [60, 80, 80, 45], [90, 80, 70, 95], [55, 45, 95, 20]] },
+    { q: "恋人にいちばん求めるのは？", a: ["やさしさ", "いっしょにいて楽しい", "たよりがい", "おたがいの自由"],
+      m: [[95, 75, 85, 55], [75, 100, 65, 75], [85, 65, 80, 60], [55, 75, 60, 100]] },
+    { q: "記念日はどうしたい？", a: ["全力でお祝いしたい", "ちょっとしたプレゼント", "言葉で気持ちを伝える", "あまり気にしない"],
+      m: [[100, 80, 70, 30], [80, 100, 80, 55], [70, 80, 100, 65], [30, 55, 65, 95]] },
+    { q: "休みの日の過ごし方は？", a: ["アクティブにおでかけ", "家でのんびり", "新しいお店を開拓", "趣味に没頭"],
+      m: [[100, 45, 85, 55], [45, 100, 60, 80], [85, 60, 100, 60], [55, 80, 60, 90]] },
+    { q: "自分の性格をひとことで言うと？", a: ["さみしがりや", "明るい元気っ子", "しっかり者", "マイペース"],
+      m: [[60, 85, 90, 45], [85, 85, 80, 75], [90, 80, 70, 80], [45, 75, 80, 85]] },
+  ];
+
+  // 結果の4つの項目（どの質問から計算するか）
+  const CATEGORIES = [
+    { name: "💓 ドキドキ度", qs: [0, 5], advice: "たまにはサプライズで、ふたりにドキドキを足してみて！" },
+    { name: "💬 会話の相性", qs: [2, 3], advice: "思っていることは、ちゃんと言葉にして伝えるのがいちばん。" },
+    { name: "💎 価値観", qs: [4, 7], advice: "ちがう考えも「そういうのもアリだね」と受け止めると、もっと仲良くなれるよ。" },
+    { name: "🎡 おでかけ相性", qs: [1, 6], advice: "おたがいの行きたい場所を、交代でえらんでみよう！" },
+  ];
+
+  // ===== URL にのせるデータ（JSON → UTF-8 → base64url） =====
+  function encode(obj) {
+    const bytes = new TextEncoder().encode(JSON.stringify(obj));
+    let bin = "";
+    bytes.forEach(b => (bin += String.fromCharCode(b)));
+    return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+
+  function decode(str) {
+    const b64 = str.replace(/-/g, "+").replace(/_/g, "/");
+    const bin = atob(b64 + "===".slice((b64.length + 3) % 4));
+    const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+
+  // 1人ぶんのデータ { n: 名前, a: "答えの番号8けた" } として正しいか
+  const ANSWER_RE = new RegExp("^[0-3]{" + QUESTIONS.length + "}$");
+  const validPerson = p =>
+    p && typeof p.n === "string" && p.n.trim().length > 0 && p.n.length <= 12 && typeof p.a === "string" && ANSWER_RE.test(p.a);
+
+  // このページの URL（? 以降なし）
+  const PAGE_URL = location.origin + location.pathname;
+
+  // ===== 画面の切り替え =====
+  const SCREEN_IDS = ["introScreen", "nameScreen", "quizScreen", "linkScreen", "loadingScreen", "resultScreen", "errorScreen"];
+  function show(id) {
+    SCREEN_IDS.forEach(s => document.getElementById(s).classList.toggle("show", s === id));
+    scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ===== URL を見て、どこから始めるか決める =====
+  const params = new URLSearchParams(location.search);
+  let partner = null; // 届いたURLの送り主（1人目）
+  let myName = "";
+  let answers = [];
+
+  if (params.has("r")) {
+    // 結果のURL: ふたりぶんのデータが入っている → いきなり結果
+    try {
+      const d = decode(params.get("r"));
+      if (!validPerson(d.a) || !validPerson(d.b)) throw new Error("bad");
+      showResult(d.a, d.b, false);
+    } catch (e) {
+      show("errorScreen");
+    }
+  } else if (params.has("d")) {
+    // 招待のURL: 1人目のデータが入っている → 2人目としてこたえる
+    try {
+      partner = decode(params.get("d"));
+      if (!validPerson(partner)) throw new Error("bad");
+      const msg = document.getElementById("inviteMsg");
+      msg.hidden = false;
+      msg.innerHTML = "💌 <b></b> さんから<br>恋愛相性占いがとどいたよ！";
+      msg.querySelector("b").textContent = partner.n;
+      document.getElementById("introLead").innerHTML =
+        "あなたのことを8つの質問でこたえると、<br>ふたりの相性がわかるよ。";
+      show("introScreen");
+    } catch (e) {
+      show("errorScreen");
+    }
+  } else {
+    // ふつうに開いたとき: 1人目として始める
+    document.getElementById("introLead").innerHTML =
+      "まずはあなたが8つの質問にこたえてね。<br>できたURLを相手に送ると、<br>ふたりの相性がわかるよ！";
+    show("introScreen");
+  }
+
+  // ===== スタート → 名前 =====
+  const nameInput = document.getElementById("nameInput");
+  const nameError = document.getElementById("nameError");
+
+  document.getElementById("introBtn").addEventListener("click", () => {
+    Sound.se("open", { volume: 0.8 });
+    show("nameScreen");
+    setTimeout(() => nameInput.focus(), 350);
+  });
+
+  function submitName() {
+    const v = nameInput.value.trim();
+    if (!v) {
+      nameError.textContent = "名前を入れてね！";
+      Sound.se("close", { volume: 0.6 });
+      return;
+    }
+    nameError.textContent = "";
+    myName = v.slice(0, 12);
+    Sound.se("click", { volume: 0.7 });
+    answers = [];
+    current = 0;
+    show("quizScreen");
+    renderQuestion();
+  }
+
+  document.getElementById("nameBtn").addEventListener("click", submitName);
+  nameInput.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.isComposing) submitName(); // 日本語変換の確定 Enter では進まない
+  });
+
+  // ===== 質問の進行 =====
+  let current = 0;
+  let locked = false;
+
+  function renderQuestion() {
+    const item = QUESTIONS[current];
+    document.getElementById("qNum").textContent = "Q" + (current + 1);
+    document.getElementById("qText").textContent = item.q;
+    document.getElementById("progressText").textContent = current + 1 + "/" + QUESTIONS.length;
+    document.getElementById("progressFill").style.width = (current / QUESTIONS.length) * 100 + "%";
+    document.getElementById("backBtn").disabled = current === 0;
+
+    const box = document.getElementById("choices");
+    box.innerHTML = "";
+    item.a.forEach((label, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "choice";
+      b.style.animationDelay = i * 0.06 + "s";
+      b.innerHTML = `<span class="mark">${"ABCD"[i]}</span><span></span>`;
+      b.lastChild.textContent = label;
+      b.addEventListener("click", () => pick(i, b));
+      box.appendChild(b);
+    });
+
+    const panel = document.getElementById("questionPanel");
+    panel.style.animation = "none";
+    panel.offsetHeight;
+    panel.style.animation = "pop 0.4s cubic-bezier(.3,1.5,.5,1) both";
+    locked = false;
+  }
+
+  function pick(i, btn) {
+    if (locked) return;
+    locked = true;
+    btn.classList.add("picked");
+    Sound.se("click", { volume: 0.7, rate: 1 + current * 0.06 });
+    answers[current] = i;
+    setTimeout(() => {
+      current++;
+      if (current < QUESTIONS.length) renderQuestion();
+      else finishQuiz();
+    }, 260);
+  }
+
+  document.getElementById("backBtn").addEventListener("click", () => {
+    if (current === 0 || locked) return;
+    current--;
+    answers.length = current;
+    Sound.se("close", { volume: 0.6 });
+    renderQuestion();
+  });
+
+  function finishQuiz() {
+    document.getElementById("progressFill").style.width = "100%";
+    const me = { n: myName, a: answers.join("") };
+    if (partner) {
+      // 2人目: 少し待ってから結果
+      show("loadingScreen");
+      let n = 0;
+      const timer = setInterval(() => Sound.se("tick", { volume: 0.35, rate: 1 + (n++ % 4) * 0.12 }), 220);
+      setTimeout(() => {
+        clearInterval(timer);
+        showResult(partner, me, true);
+      }, 1800);
+    } else {
+      // 1人目: 相手に送るURLを作る
+      const url = PAGE_URL + "?d=" + encode({ v: 1, ...me });
+      setupShare("invite", url, `💘 ${myName}さんから恋愛相性占いがとどいたよ！こたえて、ふたりの相性をチェックしてね`);
+      show("linkScreen");
+      Sound.se("accent", { volume: 0.8 });
+    }
+  }
+
+  // ===== URL のコピー・送るボタン =====
+  function setupShare(prefix, url, text) {
+    const input = document.getElementById(prefix + "Url");
+    input.value = url;
+    input.onclick = () => input.select();
+
+    const copyBtn = document.getElementById("copy" + prefix[0].toUpperCase() + prefix.slice(1));
+    copyBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(url);
+      } catch (e) {
+        // クリップボードが使えないときは選択だけしておく
+        input.select();
+        document.execCommand("copy");
+      }
+      copyBtn.textContent = "コピーした！";
+      Sound.se("click", { volume: 0.7, rate: 1.3 });
+      setTimeout(() => (copyBtn.textContent = "コピー"), 1600);
+    };
+
+    const row = document.getElementById(prefix + "Share");
+    row.innerHTML = "";
+    const add = (cls, label, href) => {
+      const a = document.createElement(href ? "a" : "button");
+      a.className = "share-btn " + cls;
+      a.textContent = label;
+      if (href) {
+        a.href = href;
+        a.target = "_blank";
+        a.rel = "noopener";
+      } else {
+        a.type = "button";
+      }
+      a.addEventListener("pointerdown", () => Sound.se("click", { volume: 0.7 }));
+      row.appendChild(a);
+      return a;
+    };
+    if (navigator.share) {
+      add("native", "📤 送る").onclick = () => navigator.share({ text, url }).catch(() => {});
+    }
+    add("line", "LINEで送る", "https://line.me/R/share?text=" + encodeURIComponent(text + "\n" + url));
+    add("x", "𝕏 でポスト", "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(url));
+  }
+
+  // ===== 相性の計算 =====
+  // 名前から決まる小さなおまけ（-5〜+5）。名前の順番を並べかえてから使うので、どちらから見ても同じ
+  function nameBonus(a, b) {
+    const s = [a, b].sort().join("💗");
+    let h = 0;
+    for (const ch of s) h = (h * 31 + ch.codePointAt(0)) >>> 0;
+    return (h % 11) - 5;
+  }
+
+  function calc(pa, pb) {
+    const ansA = [...pa.a].map(Number);
+    const ansB = [...pb.a].map(Number);
+    const per = QUESTIONS.map((q, i) => q.m[ansA[i]][ansB[i]]);
+    const avg = per.reduce((s, v) => s + v, 0) / per.length;
+    const total = Math.max(1, Math.min(100, Math.round(avg + nameBonus(pa.n, pb.n))));
+    const cats = CATEGORIES.map(c => ({
+      ...c,
+      score: Math.round(c.qs.reduce((s, i) => s + per[i], 0) / c.qs.length),
+    }));
+    // おすすめデートスポット（デートの質問の答えから。順番を入れかえても同じになるようにする）
+    const d1 = ansA[1], d2 = ansB[1];
+    const spot = d1 === d2
+      ? ["遊園地", "おしゃれなカフェ", "水族館", "おうちで映画会"][d1]
+      : ["プラネタリウム", "動物園", "夜景の見える公園"][(d1 + d2 + d1 * d2) % 3];
+    return { total, cats, spot };
+  }
+
+  function tierOf(total, a, b) {
+    if (total >= 90) return ["💞 運命のふたり", `${a}さんと${b}さんは、出会うべくして出会った運命のふたり！ 言わなくても気持ちが通じ合える、最高の相性です。この出会いを大切にしてね。`];
+    if (total >= 78) return ["💖 ベストカップル", `${a}さんと${b}さんは、いっしょにいると自然と笑顔になれるベストな組み合わせ。おたがいの良いところを引き出し合えるふたりです。`];
+    if (total >= 65) return ["💗 いい感じのふたり", `${a}さんと${b}さんは、なかなかいい感じ！ ちょっとしたちがいはあるけれど、それがふたりの会話を楽しくしてくれます。`];
+    if (total >= 50) return ["🌱 これから育つ恋", `${a}さんと${b}さんは、これから仲良くなっていくタイプ。いっしょに過ごす時間が増えるほど、相性もどんどん良くなっていくよ。`];
+    return ["🧲 正反対で引かれ合うふたり", `${a}さんと${b}さんは、考え方が正反対！ だからこそ、自分にないものを持っている相手にひかれ合うふたりです。ちがいを楽しんでね。`];
+  }
+
+  // ===== 結果の表示 =====
+  function showResult(pa, pb, iAmSecond) {
+    const { total, cats, spot } = calc(pa, pb);
+    const [tier, msg] = tierOf(total, pa.n, pb.n);
+    document.getElementById("rNameA").textContent = pa.n;
+    document.getElementById("rNameB").textContent = pb.n;
+    document.getElementById("rTier").textContent = tier;
+    document.getElementById("rMsg").textContent = msg;
+    document.getElementById("rSpot").textContent = spot;
+
+    // いちばん低い項目のアドバイスを出す
+    const low = [...cats].sort((x, y) => x.score - y.score)[0];
+    document.getElementById("rAdvice").textContent = low.advice;
+
+    const box = document.getElementById("rCats");
+    box.innerHTML = "";
+    cats.forEach(c => {
+      const name = document.createElement("span");
+      name.textContent = c.name;
+      const bar = document.createElement("div");
+      bar.className = "cat-bar";
+      bar.innerHTML = `<i data-w="${c.score}"></i>`;
+      const num = document.createElement("b");
+      num.textContent = c.score + "%";
+      box.append(name, bar, num);
+    });
+
+    // 2人目なら、結果を1人目に送れるようにする
+    if (iAmSecond) {
+      const url = PAGE_URL + "?r=" + encode({ v: 1, a: pa, b: pb });
+      document.getElementById("sendBack").hidden = false;
+      const lead = document.getElementById("sendBackLead");
+      lead.textContent = `この結果を ${pa.n} さんにも送ってあげよう！`;
+      setupShare("result", url, `💘 ${pa.n}さんと${pb.n}さんの恋愛相性は… ${total}%！ 結果を見てね`);
+      // 結果を見たあとに再読み込みしても同じ結果が出るように、アドレス欄を結果のURLにしておく
+      history.replaceState(null, "", url);
+    }
+
+    show("resultScreen");
+    Sound.se("accent", { volume: 0.9 });
+
+    // メーターと数字をアニメーション
+    const fill = document.getElementById("meterFill");
+    const pct = document.getElementById("rPct");
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      fill.style.strokeDashoffset = 402 * (1 - total / 100);
+      box.querySelectorAll("i").forEach(i => (i.style.width = i.dataset.w + "%"));
+    }));
+    const start = performance.now();
+    (function count(now) {
+      const t = Math.min(1, (now - start) / 1600);
+      pct.textContent = Math.round(total * (1 - Math.pow(1 - t, 3)));
+      if (t < 1) requestAnimationFrame(count);
+    })(start);
+  }
+</script>
+</body>
+</html>

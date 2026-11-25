@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>今日の運勢 | UraNai+（うらないプラス）</title>
+<meta name="description" content="名前と誕生日を入れると、今日の運勢がわかるよ！毎日かわるから、毎朝チェックしてね。">
+<!-- OGP（SNS で URL を貼ったときに出るカード）。画像は tools/make-ogp.ps1 で作る -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="UraNai+（うらないプラス）">
+<meta property="og:title" content="今日の運勢 | UraNai+（うらないプラス）">
+<meta property="og:description" content="名前と誕生日を入れると、今日の運勢がわかるよ！毎日かわるから、毎朝チェックしてね。">
+<meta property="og:url" content="https://kaikomziu.github.io/uranai-plus/list/j0bajrr/">
+<meta property="og:image" content="https://kaikomziu.github.io/uranai-plus/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="UraNai+ うらないプラス">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=M+PLUS+Rounded+1c:wght@500;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../common.css">
+<link rel="stylesheet" href="../fortune.css">
+<style>
+  /* 今日の運勢はオレンジ〜黄色の朝っぽい色 */
+  .panel { box-shadow: 0 8px 0 #ffd99a, 0 16px 40px rgba(255, 170, 60, 0.2); }
+  .title { color: #ff8a3d; }
+
+  .date-chip {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 999px;
+    background: #fff3e0;
+    color: #ff8a3d;
+    font-size: 14px;
+  }
+
+  .who { margin-top: 8px; font-size: 16px; color: #7a6e98; }
+
+  .total-stars { margin-top: 10px; font-size: 40px; }
+  .total-label { margin-top: 2px; font-size: 26px; color: #ff8a3d; }
+  .total-msg { margin-top: 10px; font-size: 14px; font-weight: 500; line-height: 1.9; text-align: left; }
+
+  .luck-list { margin-top: 16px; display: grid; gap: 8px; text-align: left; }
+
+  .luck {
+    padding: 10px 14px;
+    border-radius: 16px;
+    background: #fffaf3;
+  }
+
+  .luck-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 15px; }
+  .luck-head .stars { font-size: 18px; }
+  .luck-head span { white-space: nowrap; } /* 「勉強・仕事運」を折り返さない */
+  .luck p { margin-top: 2px; font-size: 13px; font-weight: 500; color: #7a6e98; }
+
+  .remember { margin-top: 10px; font-size: 12px; font-weight: 500; color: #9b8bc4; }
+  .remember input { vertical-align: middle; }
+</style>
+</head>
+<body>
+  <span class="deco" style="--x:6%;--y:22%;--s:30px;--d:5s;--delay:0s">☀️</span>
+  <span class="deco" style="--x:88%;--y:74%;--s:34px;--d:6s;--delay:-2s">🌈</span>
+  <span class="deco" style="--x:5%;--y:78%;--s:26px;--d:4.6s;--delay:-1s">✨</span>
+
+  <main class="page">
+    <!-- 入力 -->
+    <section class="screen show" id="inputScreen">
+      <div class="panel">
+        <div class="big-ico">🌞</div>
+        <h1 class="title">今日の運勢</h1>
+        <p class="lead">名前と誕生日を入れてね。<br>運勢は毎日かわるよ！</p>
+        <label class="name-label" for="nameInput">名前（ニックネームOK）</label>
+        <input class="name-input" id="nameInput" type="text" maxlength="12" autocomplete="nickname" placeholder="なまえ">
+        <label class="name-label">誕生日</label>
+        <div class="select-row">
+          <select class="select" id="monthSel" aria-label="誕生月"></select>
+          <select class="select" id="daySel" aria-label="誕生日"></select>
+        </div>
+        <p class="name-error" id="inputError"></p>
+        <label class="remember"><input type="checkbox" id="remember" checked> この端末に覚えておく</label><br>
+        <button class="btn" id="goBtn" type="button">占う ▶</button>
+      </div>
+    </section>
+
+    <section class="screen" id="loadingScreen">
+      <div class="panel">
+        <div class="ball">🌞</div>
+        <p class="thinking">今日の運勢をよみとり中<span class="dots"><span>.</span><span>.</span><span>.</span></span></p>
+      </div>
+    </section>
+
+    <!-- 結果 -->
+    <section class="screen" id="resultScreen">
+      <div class="panel">
+        <span class="date-chip" id="rDate"></span>
+        <p class="who" id="rWho"></p>
+        <div class="total-stars stars" id="rTotalStars"></div>
+        <h2 class="total-label" id="rTotalLabel"></h2>
+        <p class="total-msg" id="rTotalMsg"></p>
+        <div class="luck-list" id="rLucks"></div>
+        <div class="info">
+          <div class="info-box"><h3>🎨 ラッキーカラー</h3><p id="rColor"></p></div>
+          <div class="info-box"><h3>🔢 ラッキーナンバー</h3><p id="rNumber"></p></div>
+          <div class="info-box"><h3>🍀 ラッキーアイテム</h3><p id="rItem"></p></div>
+          <div class="info-box"><h3>⏰ ラッキータイム</h3><p id="rTime"></p></div>
+          <div class="info-box wide"><h3>💬 今日のひとこと</h3><p id="rWord"></p></div>
+        </div>
+        <div class="share-row" id="shareRow"></div>
+        <p class="note">また明日も見に来てね！</p>
+        <div class="actions">
+          <button class="btn sub" id="changeBtn" type="button">✏️ 名前・誕生日をかえる</button>
+          <a class="btn sub" href="../">🔮 占い一覧へ</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script src="../../audio.js"></script>
+<script src="../../common.js"></script>
+<script src="../fortune.js"></script>
+<script>
+  const show = Fortune.screens(["inputScreen", "loadingScreen", "resultScreen"]);
+  const SAVE_KEY = "uranai-daily-profile";
+
+  // ===== 運勢の材料 =====
+  const LEVELS = [
+    null,
+    { label: "ちょっと注意の日", msg: "今日はちょっぴり空回りしやすいかも。むりせず、いつもより少しゆっくり動くのがコツ。夜にはいいことが待っているよ。" },
+    { label: "まったりの日", msg: "大きな出来事は少なめの、のんびりした一日。こういう日こそ、好きなことをして自分をいたわってあげてね。" },
+    { label: "まずまずの日", msg: "安定した一日になりそう。いつもどおりにすごすことで、小さなラッキーに気づけるはず。" },
+    { label: "いい感じの日", msg: "運気は上向き！ やりたかったことを始めるのにぴったり。笑顔でいると、さらに運が味方してくれるよ。" },
+    { label: "さいこうの日！", msg: "今日は絶好調！ なにをやってもうまくいきそうなパワーに満ちています。思いきってチャレンジしてみよう！" },
+  ];
+
+  const LUCKS = [
+    { name: "💗 恋愛運", msgs: ["今日は自分みがきの日。", "あいさつがきっかけになるかも。", "やさしいひとことが心にとどくよ。", "目が合う回数がふえるかも！", "うれしいハプニングの予感！"] },
+    { name: "💰 金運", msgs: ["お財布のひもはかためにね。", "むだづかいに注意。", "ちょっとしたおトクがあるかも。", "いい買い物ができそう！", "思わぬごほうびがあるかも！"] },
+    { name: "📚 勉強・仕事運", msgs: ["こまめに休けいをとろう。", "見直しをていねいにね。", "コツコツが実をむすぶよ。", "集中力アップ！ はかどる日。", "ひらめきが止まらない！"] },
+    { name: "🌿 健康運", msgs: ["早めに寝てパワーチャージ。", "水分をしっかりとってね。", "軽いストレッチがおすすめ。", "体が軽く感じられそう！", "元気いっぱいですごせるよ！"] },
+  ];
+
+  const COLORS = ["さくらピンク", "みかんオレンジ", "レモンイエロー", "ミントグリーン", "そらいろブルー", "ラベンダー", "まっしろ", "ショコラブラウン", "ネイビー", "コーラルレッド"];
+  const ITEMS = ["ハンカチ", "あめ玉", "ヘアピン", "シール", "手帳", "イヤホン", "リップクリーム", "キーホルダー", "マグカップ", "折りたたみ傘", "ボールペン", "ハンドクリーム", "スニーカー", "マスキングテープ"];
+  const TIMES = ["朝7時ごろ", "朝9時ごろ", "お昼12時ごろ", "午後3時ごろ", "夕方5時ごろ", "夜8時ごろ", "寝る前"];
+  const WORDS = [
+    "迷ったら、わくわくするほうへ！",
+    "「ありがとう」をいつもより1回多く。",
+    "深呼吸すると、いいアイデアが浮かぶよ。",
+    "今日のがんばりは、未来の自分へのプレゼント。",
+    "空を見上げると、気分がすっきりするかも。",
+    "好きな音楽を聴いて、テンションアップ！",
+    "ちいさな「できた！」を数えてみて。",
+    "いつもとちがう道を通ると、発見があるかも。",
+    "だれかのいいところを見つけて伝えてみよう。",
+    "今日はあまいものがパワーになるよ。",
+  ];
+
+  // ===== 誕生日の選択肢 =====
+  const monthSel = document.getElementById("monthSel");
+  const daySel = document.getElementById("daySel");
+  monthSel.innerHTML = '<option value="">月</option>' + Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}">${i + 1}月</option>`).join("");
+  function fillDays() {
+    const m = Number(monthSel.value) || 1;
+    const max = new Date(2024, m, 0).getDate(); // うるう年をふくめた日数（2月は29日まで）
+    const keep = daySel.value;
+    daySel.innerHTML = '<option value="">日</option>' + Array.from({ length: max }, (_, i) => `<option value="${i + 1}">${i + 1}日</option>`).join("");
+    if (keep && Number(keep) <= max) daySel.value = keep;
+  }
+  monthSel.addEventListener("change", fillDays);
+  fillDays();
+
+  // 覚えている名前・誕生日があれば入れておく
+  const nameInput = document.getElementById("nameInput");
+  try {
+    const saved = JSON.parse(localStorage.getItem(SAVE_KEY) || "null");
+    if (saved) {
+      nameInput.value = saved.n || "";
+      monthSel.value = saved.m || "";
+      fillDays();
+      daySel.value = saved.d || "";
+    }
+  } catch (e) { /* 何もしない */ }
+
+  // ===== 占う =====
+  function go() {
+    const n = nameInput.value.trim();
+    const m = Number(monthSel.value);
+    const d = Number(daySel.value);
+    const err = document.getElementById("inputError");
+    if (!n) return (err.textContent = "名前を入れてね！"), Sound.se("close", { volume: 0.6 });
+    if (!m || !d) return (err.textContent = "誕生日をえらんでね！"), Sound.se("close", { volume: 0.6 });
+    err.textContent = "";
+    try {
+      if (document.getElementById("remember").checked) localStorage.setItem(SAVE_KEY, JSON.stringify({ n, m, d }));
+      else localStorage.removeItem(SAVE_KEY);
+    } catch (e) { /* 保存できなくても続ける */ }
+    Sound.se("open", { volume: 0.8 });
+    Fortune.loading(show, "loadingScreen", 1500, () => render(n, m, d));
+  }
+
+  document.getElementById("goBtn").addEventListener("click", go);
+  nameInput.addEventListener("keydown", e => { if (e.key === "Enter" && !e.isComposing) go(); });
+  document.getElementById("changeBtn").addEventListener("click", () => {
+    Sound.se("click", { volume: 0.7 });
+    show("inputScreen");
+  });
+
+  const starHtml = n => "★".repeat(n) + `<span class="off">${"★".repeat(5 - n)}</span>`;
+
+  function render(n, m, d) {
+    // 名前・誕生日・今日の日付から、その日だけの結果を決める
+    const day = Fortune.today();
+    const r = Fortune.rng(Fortune.hash(`${n}|${m}/${d}|${day}`));
+    // 星は 1〜5。真ん中が出やすいように2回ふって平均
+    const star = () => Math.min(5, Math.max(1, Math.round((r() * 5 + r() * 5) / 2 + 0.5)));
+    const lucks = LUCKS.map(l => ({ ...l, s: star() }));
+    const total = Math.min(5, Math.max(1, Math.round(lucks.reduce((a, l) => a + l.s, 0) / lucks.length + (r() - 0.5))));
+
+    const [y, mo, da] = day.split("-").map(Number);
+    const wd = "日月火水木金土"[new Date(y, mo - 1, da).getDay()];
+    document.getElementById("rDate").textContent = `${y}年${mo}月${da}日（${wd}）`;
+    document.getElementById("rWho").textContent = `${n} さんの今日の運勢`;
+    document.getElementById("rTotalStars").innerHTML = starHtml(total);
+    document.getElementById("rTotalLabel").textContent = LEVELS[total].label;
+    document.getElementById("rTotalMsg").textContent = LEVELS[total].msg;
+
+    const list = document.getElementById("rLucks");
+    list.innerHTML = "";
+    lucks.forEach(l => {
+      const div = document.createElement("div");
+      div.className = "luck";
+      div.innerHTML = `<div class="luck-head"><span></span><span class="stars">${starHtml(l.s)}</span></div><p></p>`;
+      div.querySelector(".luck-head span").textContent = l.name;
+      div.querySelector("p").textContent = l.msgs[l.s - 1];
+      list.appendChild(div);
+    });
+
+    document.getElementById("rColor").textContent = Fortune.pickOne(COLORS, r);
+    document.getElementById("rNumber").textContent = 1 + Math.floor(r() * 9);
+    document.getElementById("rItem").textContent = Fortune.pickOne(ITEMS, r);
+    document.getElementById("rTime").textContent = Fortune.pickOne(TIMES, r);
+    document.getElementById("rWord").textContent = Fortune.pickOne(WORDS, r);
+
+    Fortune.shareText(document.getElementById("shareRow"), `🌞 今日の${n}さんの運勢は「${LEVELS[total].label}」${"★".repeat(total)}`);
+    show("resultScreen");
+    Sound.se("accent", { volume: 0.9 });
+  }
+</script>
+</body>
+</html>

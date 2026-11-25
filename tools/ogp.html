@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<!-- OGP画像（1200×630）を作るためのページ。tools/make-ogp.ps1 でヘッドレスの Edge から ogp.png に書き出す -->
+<title>UraNai+ OGP</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@700&family=M+PLUS+Rounded+1c:wght@800&display=block" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+
+  body {
+    position: relative;
+    background: linear-gradient(135deg, #ffd6ec 0%, #e3d9ff 45%, #cdf3ff 100%);
+    font-family: "M PLUS Rounded 1c", sans-serif;
+    font-weight: 800;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* まわりの飾り */
+  .deco { position: absolute; transform: rotate(var(--r, 0deg)); }
+
+  /* うっすら光る円（ロゴの後ろ） */
+  .glow {
+    position: absolute;
+    width: 760px;
+    height: 760px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.35) 40%, transparent 68%);
+  }
+
+  .logo {
+    position: relative;
+    font-family: "Fredoka", sans-serif;
+    font-weight: 700;
+    font-size: 230px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .ch {
+    display: inline-block;
+    color: var(--c);
+    -webkit-text-stroke: 0.04em #fff;
+    paint-order: stroke fill;
+    text-shadow: 0 0.06em 0 var(--sh);
+    transform: rotate(var(--r, 0deg)) translateY(var(--y, 0));
+  }
+
+  .plus {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 0.62em;
+    height: 0.62em;
+    margin-left: 0.08em;
+    vertical-align: 0.45em;
+    border-radius: 50%;
+    background: #ffcf3f;
+    color: #fff;
+    font-size: 0.75em;
+    box-shadow: 0 0.06em 0 #f0a400, 0 0 0 0.05em #fff;
+  }
+
+  .plus span { transform: translateY(-0.04em); }
+
+  .sub {
+    position: relative;
+    margin-top: 34px;
+    padding: 12px 40px;
+    border-radius: 999px;
+    background: #fff;
+    color: #ff5fa2;
+    font-size: 40px;
+    letter-spacing: 0.25em;
+    box-shadow: 0 7px 0 #ffb3d4;
+  }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+
+  <span class="deco" style="left:70px;top:60px;font-size:70px;--r:-12deg">⭐</span>
+  <span class="deco" style="right:90px;top:50px;font-size:84px;--r:10deg">🌙</span>
+  <span class="deco" style="left:90px;bottom:70px;font-size:66px;--r:8deg">💖</span>
+  <span class="deco" style="right:80px;bottom:70px;font-size:78px;--r:-8deg">🔮</span>
+  <span class="deco" style="left:300px;top:40px;font-size:44px">✨</span>
+  <span class="deco" style="right:330px;bottom:40px;font-size:48px">✨</span>
+  <span class="deco" style="left:40px;top:280px;font-size:50px;--r:-10deg">🍀</span>
+  <span class="deco" style="right:40px;top:300px;font-size:48px;--r:12deg">⭐</span>
+
+  <h1 class="logo">
+    <span class="ch" style="--c:#ff5fa2;--sh:#d63d80;--r:-6deg">U</span><span class="ch" style="--c:#ff8a3d;--sh:#d9661c;--y:-6px">r</span><span class="ch" style="--c:#ffbf1f;--sh:#d99a00;--r:5deg">a</span><span class="ch" style="--c:#3ec97a;--sh:#22a35b;--y:-8px">N</span><span class="ch" style="--c:#3fb4ff;--sh:#1b8fd9;--r:-5deg">a</span><span class="ch" style="--c:#9b6bff;--sh:#7646e0;--r:4deg">i</span><span class="plus"><span>+</span></span>
+  </h1>
+  <p class="sub">うらないプラス</p>
+</body>
+</html>
